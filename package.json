@@ -1,0 +1,18 @@
+{
+  "name": "rx-stream",
+  "version": "0.0.1",
+  "description": "ReactiveStreams with TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lostintime <lostintime.dev@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "funfix": "^6.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.53",
+    "typescript": "^2.6.1"
+  }
+}
