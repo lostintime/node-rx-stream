@@ -1,13 +1,9 @@
-import {Future} from 'funfix';
+import {Future, Scheduler} from 'funfix';
 
 export type Throwable = Error | Object;
 
 export interface Cancelable {
   cancel(): void;
-}
-
-export interface Subscription extends Cancelable {
-  request(n: number): void;
 }
 
 export type AckStop = 'stop';
@@ -20,20 +16,14 @@ export const Continue: AckContinue = 'continue';
 export type Ack = SyncAck | AsyncAck
 
 
-export interface Subscriber<T> {
+export interface Observer<T> {
+  onNext(t: T): Ack;
+
   onComplete(): void;
 
   onError(e: Throwable): void;
-
-  onNext(t: T): Ack;
-
-  onSubscribe(s: Subscription): void;
 }
 
-export interface Publisher<T> {
-  subscribe(s: Subscriber<T>): void;
-}
-
-export interface Processor<T> extends Publisher<T>, Subscriber<T> {
-
+export interface Subscriber<T> extends Observer<T> {
+  readonly scheduler: Scheduler // FIXME transform to a method
 }

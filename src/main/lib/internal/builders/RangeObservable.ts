@@ -26,7 +26,7 @@ export default class RangeObservable extends ObservableInstance<number> {
 
   unsafeSubscribeFn(subscriber: Subscriber<number>): Cancelable {
     // const s = subscriber.scheduler;
-    if (!this.isInRange(this._from, this._until, this._step)) {
+    if (!RangeObservable.isInRange(this._from, this._until, this._step)) {
       subscriber.onComplete();
       return new EmptyCancelable();
     } else {
@@ -42,7 +42,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     const ack = downstream.onNext(from);
     const nextFrom = from + this._step;
 
-    if (!this.isInRange(nextFrom, this._until, this._step)) {
+    if (!RangeObservable.isInRange(nextFrom, this._until, this._step)) {
       downstream.onComplete();
     } else {
       if (ack === Continue) {
@@ -73,7 +73,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     });
   }
 
-  private isInRange(x: number, until: number, step: number): boolean {
+  private static isInRange(x: number, until: number, step: number): boolean {
     return (step > 0 && x < until) || (step < 0 && x > until);
   }
 }

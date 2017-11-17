@@ -1,14 +1,15 @@
 import Observable from "./lib/Observable";
-import {Ack, Cancelable, Continue, Stop, Subscriber, Subscription, Throwable} from "./lib/Reactive";
-import ObservableInstance from "./lib/internal/ObservableInstance";
-import {Future} from 'funfix';
+import {Ack, Cancelable, Continue, Stop, Subscriber, Throwable} from "./lib/Reactive";
+import {Future, Scheduler} from 'funfix';
 
 
 class OnNextSubscriber<T> implements Subscriber<T> {
   private readonly _fn: (t: T) => Ack;
+  readonly scheduler: Scheduler;
 
-  constructor(fn: (t: T) => Ack) {
+  constructor(fn: (t: T) => Ack, scheduler?: Scheduler) {
     this._fn = fn;
+    this.scheduler = scheduler || Scheduler.global.get();
   }
 
   onComplete(): void {
@@ -20,20 +21,13 @@ class OnNextSubscriber<T> implements Subscriber<T> {
   onNext(t: T): Ack {
     return this._fn(t);
   }
-
-  onSubscribe(s: Subscription): void {
-  }
 }
 
-
-// TODO implement new Observable which issue a value, or function result forever (or limited times), backpressed!
-// https://github.com/monix/monix/tree/master/monix-reactive/shared/src/main/scala/monix/reactive/internal/builders
+// TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
 // const ss = Observable.now(10);
 // const ss = Observable.loop();
 const ss = Observable.range(0, 1000000000);
-
-// const ss = new EvalWhileDefinedObservable();
 
 function process(v: number): Ack {
   if (v % 1000000 === 0) {

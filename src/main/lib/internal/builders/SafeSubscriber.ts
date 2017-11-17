@@ -1,13 +1,16 @@
 /**
  * FIXME implement it safely!
  */
-import {Ack, Subscriber, Subscription, Throwable} from "../../Reactive";
+import {Ack, Subscriber, Throwable} from "../../Reactive";
+import {Scheduler} from 'funfix';
 
 export default class SafeSubscriber<T> implements Subscriber<T> {
   private readonly _subscriber: Subscriber<T>;
+  readonly scheduler: Scheduler;
 
   constructor(unsafeSubscriber: Subscriber<T>) {
     this._subscriber = unsafeSubscriber;
+    this.scheduler = unsafeSubscriber.scheduler
   }
 
   onComplete(): void {
@@ -20,9 +23,5 @@ export default class SafeSubscriber<T> implements Subscriber<T> {
 
   onNext(t: T): Ack {
     return this._subscriber.onNext(t);
-  }
-
-  onSubscribe(s: Subscription): void {
-    this._subscriber.onSubscribe(s);
   }
 }
