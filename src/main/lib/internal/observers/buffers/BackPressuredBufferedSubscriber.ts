@@ -7,6 +7,11 @@ export default class BackPressuredBufferedSubscriber<A> extends AbstractBackPres
   }
 
   protected fetchNext(): A | null {
-    return this.queue.shift() || null;
+    const next = this.queue.shift();
+    if (next !== undefined) {
+      return next;
+    }
+
+    return null;
   }
 }

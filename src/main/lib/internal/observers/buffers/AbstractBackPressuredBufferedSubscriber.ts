@@ -35,26 +35,24 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   onNext(elem: A): Ack {
     if (this.upstreamIsComplete || this.downstreamIsComplete) {
       return Stop;
-    } else {
-      if (this.backPressured === null) {
-        if (this.queue.length < this.bufferSize) {
-          this.queue.push(elem);
-          this.pushToConsumer();
-
-          return Continue
-        } else {
-          this.backPressured = FutureMaker.empty(this.scheduler);
-          this.queue.push(elem);
-          this.pushToConsumer();
-
-          return this.backPressured.future();
-        }
-      } else {
+    } else if (this.backPressured === null) {
+      if (this.queue.length < this.bufferSize) {
         this.queue.push(elem);
         this.pushToConsumer();
 
-        return this.backPressured.future()
+        return Continue
+      } else {
+        this.backPressured = FutureMaker.empty(this.scheduler);
+        this.queue.push(elem);
+        this.pushToConsumer();
+
+        return this.backPressured.future();
       }
+    } else {
+      this.queue.push(elem);
+      this.pushToConsumer();
+
+      return this.backPressured.future()
     }
   }
 
@@ -76,29 +74,31 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   private pushToConsumer(): void {
     if (!this.isLoopActive) {
       this.isLoopActive = true;
-      this.scheduler.executeBatched(this.consumerRunLoop)
+      this.scheduler.trampoline(this.consumerRunLoop.bind(this))
     }
   }
 
   protected abstract fetchNext(): R | null;
 
   private consumerRunLoop(): void {
-
+    this.fastLoop(this.lastIterationAck)
   }
 
   private signalNext(next: R): Ack {
     try {
       const ack = this.out.onNext(next);
-      // Tries flattening the Future[Ack] to a
+      // Tries flattening the Ack to a
       // synchronous value
       if (ack === Continue || ack === Stop) {
+        // SyncAck
         return ack;
       } else {
+        // AsyncAck
         return ack.value() // Option<Try<SyncAck>>
           .fold((): Ack => {
             return ack; // None
           }, (v): Ack => { // Some<Try<SyncAck>>
-            return v.fold((e) => { // failure
+            return v.fold((e) => {
               this.downstreamSignalComplete(e);
               return Stop;
             }, id)
@@ -113,7 +113,7 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   private downstreamSignalComplete(ex: Throwable | null = null): void {
     this.downstreamIsComplete = true;
     try {
-      if (ex != null)
+      if (ex !== null)
         this.out.onError(ex);
       else
         this.out.onComplete();
@@ -130,7 +130,6 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
       }, (a) => {
         if (a === Continue) {
           const nextAck = this.signalNext(next);
-          // const isSync = ack === Continue || ack === Stop;
           this.fastLoop(nextAck)
         } else {
           // ending loop
@@ -170,6 +169,7 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
             return
           } else {
             this.goAsync(next, ack);
+            return;
           }
         } else {
           // Ending loop

@@ -1,47 +1,36 @@
 import Observable from "./lib/Observable";
 import {Ack, Cancelable, Continue, Stop, Subscriber, Throwable} from "./lib/Reactive";
 import {Future, Scheduler} from 'funfix';
+import BackPressuredBufferedSubscriber from "./lib/internal/observers/buffers/BackPressuredBufferedSubscriber";
+import {debug} from "util";
 
 
-class OnNextSubscriber<T> implements Subscriber<T> {
-  private readonly _fn: (t: T) => Ack;
+class DebugSubscriber<T> implements Subscriber<T> {
   readonly scheduler: Scheduler;
 
-  constructor(fn: (t: T) => Ack, scheduler?: Scheduler) {
-    this._fn = fn;
+  constructor(scheduler?: Scheduler) {
     this.scheduler = scheduler || Scheduler.global.get();
   }
 
   onComplete(): void {
+    console.log('debug.onComplete');
   }
 
   onError(e: Throwable): void {
+    console.log('debug.onError', e);
   }
 
   onNext(t: T): Ack {
-    return this._fn(t);
+    console.log('debug.onNext()', t);
+    return Future.pure(Continue).delayResult(1000);
   }
 }
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-// const ss = Observable.now(10);
-// const ss = Observable.loop();
-const ss = Observable.range(0, 1000000000);
+const items = Observable.range(0, 10);
 
-function process(v: number): Ack {
-  if (v % 1000000 === 0) {
-    console.log('got value', v);
-  }
-  // const arr: number[] = [];
-  // for (let i = 0; i < 10000; i++) {
-  //   arr.push(v);
-  // }
-  //
-  // return arr.length > 0 ? Continue : Continue;
+const dbg = new DebugSubscriber();
+const bp = new BackPressuredBufferedSubscriber(dbg, 2);
 
-  return Continue;
-  // return Future.pure(Continue).delayResult(300);
-}
-
-ss.subscribe(new OnNextSubscriber(process));
+items.subscribe(bp);
