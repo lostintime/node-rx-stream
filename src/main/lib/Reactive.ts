@@ -27,3 +27,5 @@ export interface Observer<T> {
 export interface Subscriber<T> extends Observer<T> {
   readonly scheduler: Scheduler // FIXME transform to a method
 }
+
+export type Operator<I, O> = (s: Subscriber<O>) => Subscriber<I>;

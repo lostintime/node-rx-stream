@@ -3,6 +3,9 @@ import ObservableInstance from "./internal/ObservableInstance";
 import RangeObservable from "./internal/builders/RangeObservable";
 import {Scheduler} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
+import {Operator} from "./Reactive";
+import LiftByOperatorObservable from "./internal/operators/LiftByOperatorObservable";
+import apply = Reflect.apply;
 
 /**
  * https://github.com/monix/monix/blob/master/monix-reactive/shared/src/main/scala/monix/reactive/Observable.scala
