@@ -158,6 +158,12 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
         const next = this.fetchNext();
 
         if (next !== null) {
+          // there is room for 1 more
+          if (this.backPressured !== null && ack !== Stop) {
+            this.backPressured.success(this.upstreamIsComplete ? Stop : Continue);
+            this.backPressured = null
+          }
+
           if (ack === Continue) {
             ack = this.signalNext(next);
             if (ack === Stop) {

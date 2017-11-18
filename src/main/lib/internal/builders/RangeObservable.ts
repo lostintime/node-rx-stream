@@ -39,7 +39,6 @@ export default class RangeObservable extends ObservableInstance<number> {
   }
 
   private loop(cancelable: BooleanCancelable, downstream: Subscriber<number>, from: number): void {
-    console.log('issue next: ', from);
     const ack = downstream.onNext(from);
     const nextFrom = from + this._step;
 

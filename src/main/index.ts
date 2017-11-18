@@ -21,16 +21,17 @@ class DebugSubscriber<T> implements Subscriber<T> {
   }
 
   onNext(t: T): Ack {
-    console.log('debug.onNext()', t);
-    return Future.pure(Continue).delayResult(1000);
+    // console.log('debug.onNext()', t);
+    return Continue;
+    // return Future.pure(Continue);
   }
 }
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-const items = Observable.range(0, 10);
+const items = Observable.range(0, 100000000);
 
 const dbg = new DebugSubscriber();
-const bp = new BackPressuredBufferedSubscriber(dbg, 2);
+const bp = new BackPressuredBufferedSubscriber(dbg, 4);
 
 items.subscribe(bp);
