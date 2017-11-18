@@ -17,7 +17,7 @@ export type Ack = SyncAck | AsyncAck
 
 
 export interface Observer<T> {
-  onNext(t: T): Ack;
+  onNext(elem: T): Ack;
 
   onComplete(): void;
 
