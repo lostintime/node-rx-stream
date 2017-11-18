@@ -30,11 +30,11 @@ class DebugSubscriber<T> implements Subscriber<T> {
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
 // const items = Observable.range(0, 100);
-const items = Observable.range(0, 100000000);
+const items = Observable.range(0, 10000000);
 
 const dbg = new DebugSubscriber();
 const bp = new BackPressuredBufferedSubscriber(dbg, 4);
 
 items
-  .map(a => `item ${a}`)
+  // .map(a => `item ${a}`)
   .subscribe(bp);

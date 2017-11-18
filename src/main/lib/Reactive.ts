@@ -15,6 +15,21 @@ export const Continue: AckContinue = 'continue';
 
 export type Ack = SyncAck | AsyncAck
 
+// TODO find home for Ack methods
+export function syncOnContinue(ack: Ack, callback: () => void): Ack {
+  if (ack === Continue) {
+    callback();
+  } else if (ack !== Stop) {
+    ack.onComplete((result) => {
+      if (result.isSuccess() && result.get() === Continue) {
+        callback();
+      }
+    });
+
+  }
+
+  return ack;
+}
 
 export interface Observer<T> {
   onNext(elem: T): Ack;
