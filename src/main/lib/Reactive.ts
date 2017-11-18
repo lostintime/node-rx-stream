@@ -15,6 +15,20 @@ export const Continue: AckContinue = 'continue';
 
 export type Ack = SyncAck | AsyncAck
 
+export function syncOn(ack: Ack, callback: (SyncAck) => void): Ack {
+  if (ack === Continue || ack === Stop) {
+    callback(ack);
+  } else {
+    ack.onComplete((result) => {
+      if (result.isSuccess()) {
+        callback(result.get());
+      }
+    });
+  }
+
+  return ack;
+}
+
 // TODO find home for Ack methods
 export function syncOnContinue(ack: Ack, callback: () => void): Ack {
   if (ack === Continue) {
@@ -25,7 +39,6 @@ export function syncOnContinue(ack: Ack, callback: () => void): Ack {
         callback();
       }
     });
-
   }
 
   return ack;
