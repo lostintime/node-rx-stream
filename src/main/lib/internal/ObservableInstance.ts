@@ -11,5 +11,7 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
 
+  filter: (fn: (a: A) => boolean) => ObservableInstance<A>
+
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }
