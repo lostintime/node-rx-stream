@@ -3,7 +3,7 @@ import ObservableInstance from "./internal/ObservableInstance";
 import RangeObservable from "./internal/builders/RangeObservable";
 import {Scheduler} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
-import {OperatorsMixin} from "./internal/mixins/index";
+import OperatorsMixin from "./internal/mixins/OperatorsMixin";
 
 applyMixins(ObservableInstance, [OperatorsMixin]);
 

@@ -1,6 +1,7 @@
 import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
 import {Scheduler} from 'funfix';
 
+
 export default class MapOperator<A, B> implements Subscriber<A> {
   private _isDone: boolean = false;
 
@@ -19,9 +20,9 @@ export default class MapOperator<A, B> implements Subscriber<A> {
       if (streamError) {
         this.onError(e);
         return Stop
-      } else {
-        throw e;
       }
+
+      throw e;
     }
   }
 
