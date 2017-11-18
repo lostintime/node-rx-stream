@@ -3,9 +3,9 @@ import ObservableInstance from "./internal/ObservableInstance";
 import RangeObservable from "./internal/builders/RangeObservable";
 import {Scheduler} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
-import {Operator} from "./Reactive";
-import LiftByOperatorObservable from "./internal/operators/LiftByOperatorObservable";
-import apply = Reflect.apply;
+import {OperatorsMixin} from "./internal/mixins/index";
+
+applyMixins(ObservableInstance, [OperatorsMixin]);
 
 /**
  * https://github.com/monix/monix/blob/master/monix-reactive/shared/src/main/scala/monix/reactive/Observable.scala
@@ -22,4 +22,12 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
   static loop(scheduler?: Scheduler): Observable<number> {
     return new LoopObservable(scheduler || Scheduler.global.get());
   }
+}
+
+function applyMixins(derivedCtor: any, baseCtors: any[]) {
+  baseCtors.forEach(baseCtor => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+      derivedCtor.prototype[name] = baseCtor.prototype[name];
+    });
+  });
 }
