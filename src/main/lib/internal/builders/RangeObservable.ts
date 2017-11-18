@@ -6,22 +6,14 @@ import {Scheduler} from 'funfix';
 
 
 export default class RangeObservable extends ObservableInstance<number> {
-  private readonly _from: number;
-  private readonly _until: number;
-  private readonly _step: number;
-  private readonly _scheduler: Scheduler;
-
-  constructor(from: number, to: number, step: number = 1, scheduler: Scheduler) {
+  constructor(private readonly _from: number,
+              private readonly _until: number,
+              private readonly _step: number = 1,
+              private readonly _scheduler: Scheduler) {
     super();
-    if (step == 0) {
+    if (_step == 0) {
       throw new Error('Invalid range step=0');
     }
-
-    this._from = from;
-    this._until = to;
-    this._step = step;
-
-    this._scheduler = scheduler;
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<number>): Cancelable {

@@ -5,11 +5,8 @@ import {Future, Scheduler} from 'funfix';
 
 
 export default class LoopObservable extends ObservableInstance<number> {
-  private readonly _scheduler: Scheduler;
-
-  constructor(scheduler: Scheduler) {
+  constructor(private readonly _scheduler: Scheduler) {
     super();
-    this._scheduler = scheduler;
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<number>): Cancelable {

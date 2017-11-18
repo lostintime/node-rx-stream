@@ -1,16 +1,12 @@
-/**
- * FIXME implement it safely!
- */
 import {Ack, Subscriber, Throwable} from "../../Reactive";
 import {Scheduler} from 'funfix';
 
+/**
+ * FIXME implement it safely!
+ */
 export default class SafeSubscriber<T> implements Subscriber<T> {
-  private readonly _subscriber: Subscriber<T>;
-  readonly scheduler: Scheduler;
-
-  constructor(unsafeSubscriber: Subscriber<T>) {
-    this._subscriber = unsafeSubscriber;
-    this.scheduler = unsafeSubscriber.scheduler
+  constructor(private readonly _subscriber: Subscriber<T>,
+              readonly scheduler: Scheduler = _subscriber.scheduler) {
   }
 
   onComplete(): void {

@@ -10,70 +10,68 @@ function nextPowerOf2(nr: number): number {
 }
 
 export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> implements Subscriber<A> {
-  private readonly out: Subscriber<R>;
-  private readonly bufferSize: number;
-  readonly scheduler: Scheduler;
+  private readonly _bufferSize: number;
 
-  private upstreamIsComplete: boolean = false;
-  private downstreamIsComplete: boolean = false;
-  private errorThrown: Throwable | null = null;
-  private isLoopActive: boolean = false;
-  private backPressured: FutureMaker<SyncAck> | null = null;
-  private lastIterationAck: Ack = Continue;
-  protected queue: A[] = [];
+  private _upstreamIsComplete: boolean = false;
+  private _downstreamIsComplete: boolean = false;
+  private _errorThrown: Throwable | null = null;
+  private _isLoopActive: boolean = false;
+  private _backPressured: FutureMaker<SyncAck> | null = null;
+  private _lastIterationAck: Ack = Continue;
+  protected _queue: A[] = [];
 
-  constructor(out: Subscriber<R>, size: number) {
+  constructor(private readonly _out: Subscriber<R>,
+              size: number,
+              readonly scheduler: Scheduler = _out.scheduler) {
     if (size < 0) {
       throw new Error("bufferSize must be a strictly positive number");
     }
 
-    this.out = out;
-    this.bufferSize = nextPowerOf2(size);
-    this.scheduler = out.scheduler;
+    this._bufferSize = nextPowerOf2(size);
   }
 
   onNext(elem: A): Ack {
-    if (this.upstreamIsComplete || this.downstreamIsComplete) {
+    if (this._upstreamIsComplete || this._downstreamIsComplete) {
       return Stop;
-    } else if (this.backPressured === null) {
-      if (this.queue.length < this.bufferSize) {
-        this.queue.push(elem);
+    } else if (this._backPressured === null) {
+      if (this._queue.length < this._bufferSize) {
+        this._queue.push(elem);
         this.pushToConsumer();
 
         return Continue
       } else {
-        this.backPressured = FutureMaker.empty(this.scheduler);
-        this.queue.push(elem);
+        this._backPressured = FutureMaker.empty(this.scheduler);
+        this._queue.push(elem);
         this.pushToConsumer();
 
-        return this.backPressured.future();
+        return this._backPressured.future();
       }
     } else {
-      this.queue.push(elem);
+      this._queue.push(elem);
       this.pushToConsumer();
 
-      return this.backPressured.future()
+      return this._backPressured.future()
     }
   }
 
   onError(e: Throwable): void {
-    if (!this.upstreamIsComplete && !this.downstreamIsComplete) {
-      this.errorThrown = e;
-      this.upstreamIsComplete = true;
+    if (!this._upstreamIsComplete && !this._downstreamIsComplete) {
+      this._errorThrown = e;
+      this._upstreamIsComplete = true;
       this.pushToConsumer()
     }
   }
 
   onComplete(): void {
-    if (!this.upstreamIsComplete && !this.downstreamIsComplete) {
-      this.upstreamIsComplete = true;
+    if (!this._upstreamIsComplete && !this._downstreamIsComplete) {
+      this._upstreamIsComplete = true;
       this.pushToConsumer()
     }
   }
 
   private pushToConsumer(): void {
-    if (!this.isLoopActive) {
-      this.isLoopActive = true;
+    if (!this._isLoopActive) {
+      this._isLoopActive = true;
       this.scheduler.trampoline(this.consumerRunLoop.bind(this))
     }
   }
@@ -81,12 +79,12 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   protected abstract fetchNext(): R | null;
 
   private consumerRunLoop(): void {
-    this.fastLoop(this.lastIterationAck)
+    this.fastLoop(this._lastIterationAck)
   }
 
   private signalNext(next: R): Ack {
     try {
-      const ack = this.out.onNext(next);
+      const ack = this._out.onNext(next);
       // Tries flattening the Ack to a
       // synchronous value
       if (ack === Continue || ack === Stop) {
@@ -111,12 +109,12 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   }
 
   private downstreamSignalComplete(ex: Throwable | null = null): void {
-    this.downstreamIsComplete = true;
+    this._downstreamIsComplete = true;
     try {
       if (ex !== null)
-        this.out.onError(ex);
+        this._out.onError(ex);
       else
-        this.out.onComplete();
+        this._out.onComplete();
     } catch (err) {
       this.scheduler.reportFailure(err)
     }
@@ -125,7 +123,7 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   private goAsync(next: R, ack: AsyncAck): void {
     ack.onComplete((r) => {
       r.fold((ex) => {
-        this.isLoopActive = false;
+        this._isLoopActive = false;
         this.downstreamSignalComplete(ex);
       }, (a) => {
         if (a === Continue) {
@@ -133,19 +131,19 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
           this.fastLoop(nextAck)
         } else {
           // ending loop
-          this.downstreamIsComplete = true;
-          this.isLoopActive = false
+          this._downstreamIsComplete = true;
+          this._isLoopActive = false
         }
       });
     })
   }
 
   stopStreaming(): void {
-    this.downstreamIsComplete = true;
-    this.isLoopActive = false;
-    if (this.backPressured !== null) {
-      this.backPressured.success(Stop);
-      this.backPressured = null
+    this._downstreamIsComplete = true;
+    this._isLoopActive = false;
+    if (this._backPressured !== null) {
+      this._backPressured.success(Stop);
+      this._backPressured = null
     }
   }
 
@@ -154,14 +152,14 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
     let streamErrors = true;
 
     try {
-      while (this.isLoopActive && !this.downstreamIsComplete) {
+      while (this._isLoopActive && !this._downstreamIsComplete) {
         const next = this.fetchNext();
 
         if (next !== null) {
           // there is room for 1 more
-          if (this.backPressured !== null && ack !== Stop) {
-            this.backPressured.success(this.upstreamIsComplete ? Stop : Continue);
-            this.backPressured = null
+          if (this._backPressured !== null && ack !== Stop) {
+            this._backPressured.success(this._upstreamIsComplete ? Stop : Continue);
+            this._backPressured = null
           }
 
           if (ack === Continue) {
@@ -179,18 +177,18 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
           }
         } else {
           // Ending loop
-          if (this.backPressured !== null) {
-            this.backPressured.success(this.upstreamIsComplete ? Stop : Continue);
-            this.backPressured = null
+          if (this._backPressured !== null) {
+            this._backPressured.success(this._upstreamIsComplete ? Stop : Continue);
+            this._backPressured = null
           }
 
           streamErrors = false;
-          if (this.upstreamIsComplete) {
-            this.downstreamSignalComplete(this.errorThrown);
+          if (this._upstreamIsComplete) {
+            this.downstreamSignalComplete(this._errorThrown);
           }
 
-          this.lastIterationAck = ack;
-          this.isLoopActive = false;
+          this._lastIterationAck = ack;
+          this._isLoopActive = false;
           return
         }
       }
@@ -201,8 +199,8 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
         this.scheduler.reportFailure(ex);
       }
 
-      this.lastIterationAck = Stop;
-      this.isLoopActive = false
+      this._lastIterationAck = Stop;
+      this._isLoopActive = false
     }
   }
 }

@@ -1,11 +1,7 @@
 import {Cancelable} from "../../Reactive";
 
 export default class BooleanCancelable implements Cancelable {
-  private _isCancelled: boolean;
-
-  constructor() {
-    this._isCancelled = false;
-  }
+  private _isCancelled: boolean = false;
 
   isCanceled(): boolean {
     return this._isCancelled;

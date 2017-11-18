@@ -1,6 +1,6 @@
 import Observable from "./lib/Observable";
-import {Ack, Cancelable, Continue, Stop, Subscriber, Throwable} from "./lib/Reactive";
-import {Future, Scheduler} from 'funfix';
+import {Ack, Continue, Subscriber, Throwable} from "./lib/Reactive";
+import {Scheduler} from 'funfix';
 import BackPressuredBufferedSubscriber from "./lib/internal/observers/buffers/BackPressuredBufferedSubscriber";
 import {debug} from "util";
 
