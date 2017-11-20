@@ -1,4 +1,4 @@
-import {Ack, Continue, Stop, Subscriber, SyncAck, syncOnContinue, Throwable} from "../../Reactive";
+import {Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOnContinue, Throwable} from "../../Reactive";
 import {Scheduler, Try, FutureMaker} from 'funfix';
 
 
@@ -26,7 +26,7 @@ export default class SafeSubscriber<T> implements Subscriber<T> {
   }
 
   onComplete(): void {
-    syncOnContinue(this._ack, () => {
+    ackSyncOnContinue(this._ack, () => {
       if (!this._isDone) {
         this._isDone = true;
 
@@ -40,7 +40,7 @@ export default class SafeSubscriber<T> implements Subscriber<T> {
   }
 
   onError(e: Throwable): void {
-    syncOnContinue(this._ack, () => this.signalError(e));
+    ackSyncOnContinue(this._ack, () => this.signalError(e));
   }
 
   private flattenAndCatchFailures(ack: Ack): Ack {

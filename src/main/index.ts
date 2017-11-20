@@ -21,7 +21,7 @@ class DebugSubscriber<T> implements Subscriber<T> {
   }
 
   onNext(t: T): Ack {
-    // console.log(`debug.onNext(${t})`);
+    console.log(`debug.onNext(${t})`);
     return Continue;
     // return Future.pure(Continue);
   }
@@ -29,8 +29,9 @@ class DebugSubscriber<T> implements Subscriber<T> {
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-// const items = Observable.range(0, 10);
-const items = Observable.range(0, 10000000);
+const items = Observable.range(0, 10);
+// const items = Observable.empty<number>();
+// const items = Observable.range(0, 10000000);
 
 const dbg = new DebugSubscriber();
 const bp = new BackPressuredBufferedSubscriber(dbg, 4);
@@ -38,4 +39,5 @@ const bp = new BackPressuredBufferedSubscriber(dbg, 4);
 items
   .filter(a => a % 2 == 0)
   .map(a => `item ${a}`)
+  .flatMap(s => Observable.now(`flatMapped(${s})`))
   .subscribe(bp);

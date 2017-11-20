@@ -1,4 +1,4 @@
-import {Future, Scheduler} from 'funfix';
+import {Future, Try, Success, Scheduler} from 'funfix';
 
 export type Throwable = Error | Object;
 
@@ -15,22 +15,20 @@ export const Continue: AckContinue = 'continue';
 
 export type Ack = SyncAck | AsyncAck
 
-export function syncOn(ack: Ack, callback: (SyncAck) => void): Ack {
+// TODO find home for Ack methods
+export function ackSyncOn(ack: Ack, callback: (t: Try<SyncAck>) => void): Ack {
   if (ack === Continue || ack === Stop) {
-    callback(ack);
+    callback(Success(ack));
   } else {
     ack.onComplete((result) => {
-      if (result.isSuccess()) {
-        callback(result.get());
-      }
+      callback(result);
     });
   }
 
   return ack;
 }
 
-// TODO find home for Ack methods
-export function syncOnContinue(ack: Ack, callback: () => void): Ack {
+export function ackSyncOnContinue(ack: Ack, callback: () => void): Ack {
   if (ack === Continue) {
     callback();
   } else if (ack !== Stop) {
@@ -39,6 +37,20 @@ export function syncOnContinue(ack: Ack, callback: () => void): Ack {
         callback();
       }
     });
+  }
+
+  return ack;
+}
+
+export function ackSyncOnStopOrFailure(ack: Ack, callback: () => void): Ack {
+  if (ack === Stop) {
+    callback();
+  } else if (ack !== Continue) {
+    ack.onComplete((result) => {
+      if (result.isFailure() || result.get() === Stop) {
+        callback();
+      }
+    })
   }
 
   return ack;
