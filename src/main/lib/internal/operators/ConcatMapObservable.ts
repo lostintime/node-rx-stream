@@ -1,7 +1,7 @@
 import ObservableInstance from "../ObservableInstance";
 import {
   Ack, Cancelable, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure,
-  Throwable
+  Throwable, AsyncAck
 } from "../../Reactive";
 import {Scheduler, Option, None, Some, FutureMaker} from 'funfix';
 import EmptyCancelable from "../cancelables/EmptyCancelable";
@@ -152,12 +152,13 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         () => {
           this.sendOnComplete()
         },
-        this.scheduler));
+        this.scheduler
+      ));
 
       const oldState: FlatMapState.Type = this._state;
       this._state = FlatMapState.Active(cancelable);
 
-      switch(oldState.kind) {
+      switch (oldState.kind) {
         case 'WaitOnNextChild':
           const ack: Ack = oldState.ack;
           if (ack === Continue || ack === Stop) {
@@ -168,6 +169,15 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
               return Stop;
             })
           }
+        case 'WaitOnActiveChild':
+          const acAck: AsyncAck = asyncUpstreamAck.future();
+          return acAck.recover(e => {
+            this.scheduler.reportFailure(e);
+            return Stop;
+          });
+        case 'WaitComplete':
+          this._state = oldState;
+          return Stop;
         case 'Canceled':
           cancelable.cancel();
           this.cancel();
@@ -329,5 +339,3 @@ namespace FlatMapState {
     return new States.Active(ref);
   }
 }
-
-
