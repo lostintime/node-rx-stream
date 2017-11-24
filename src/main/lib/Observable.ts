@@ -6,6 +6,8 @@ import LoopObservable from "./internal/builders/LoopObservable";
 import OperatorsMixin from "./internal/mixins/OperatorsMixin";
 import EmptyObservable from "./internal/builders/EmptyObservable";
 import ArrayObservable from "./internal/builders/ArrayObservable";
+import NeverObservable from "./internal/builders/NeverObservable";
+import EvalAlwaysObservable from "./internal/builders/EvalAlwaysObservable";
 
 applyMixins(ObservableInstance, [OperatorsMixin]);
 
@@ -40,6 +42,14 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
 
   static fromArray<A>(arr: Array<A>, scheduler?: Scheduler): Observable<A> {
     return new ArrayObservable(arr, scheduler || Scheduler.global.get());
+  }
+
+  static never<A>(): Observable<A> {
+    return NeverObservable;
+  }
+
+  static eval<A>(fn: () => A): Observable<A> {
+    return new EvalAlwaysObservable(fn);
   }
 }
 
