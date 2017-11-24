@@ -29,15 +29,22 @@ class DebugSubscriber<T> implements Subscriber<T> {
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-const items = Observable.range(0, 10);
+// const items = Observable.range(0, 10);
 // const items = Observable.empty<number>();
 // const items = Observable.range(0, 10000000);
+const items = Observable.items(0,1,2,3,4,5,6);
 
 const dbg = new DebugSubscriber();
 const bp = new BackPressuredBufferedSubscriber(dbg, 4);
 
 items
   .filter(a => a % 2 == 0)
-  .map(a => `item ${a}`)
-  .flatMap(s => Observable.now(`flatMapped(${s})`))
-  .subscribe(bp);
+  // .map(a => {
+  //   // console.log('map item', a);
+  //   return `item ${a}`;
+  // })
+  // .flatMap(s => {
+  //   console.log('flatMap for ', s);
+  //   return Observable.items(`0.flatMapped(${s})`, `1.flatMapped(${s})`)
+  // })
+  .subscribe(dbg);

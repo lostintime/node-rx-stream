@@ -5,6 +5,7 @@ import {Scheduler} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
 import OperatorsMixin from "./internal/mixins/OperatorsMixin";
 import EmptyObservable from "./internal/builders/EmptyObservable";
+import ArrayObservable from "./internal/builders/ArrayObservable";
 
 applyMixins(ObservableInstance, [OperatorsMixin]);
 
@@ -17,7 +18,11 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
     return new EmptyObservable<A>();
   }
 
-  static now<U>(value: U): Observable<U> {
+  static pure<A>(value: A): Observable<A> {
+    return new NowObservable(value);
+  }
+
+  static now<A>(value: A): Observable<A> {
     return new NowObservable(value)
   }
 
@@ -27,6 +32,14 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
 
   static loop(scheduler?: Scheduler): Observable<number> {
     return new LoopObservable(scheduler || Scheduler.global.get());
+  }
+
+  static items<A>(...items: Array<A>): Observable<A> {
+    return new ArrayObservable(items, Scheduler.global.get());
+  }
+
+  static fromArray<A>(arr: Array<A>, scheduler?: Scheduler): Observable<A> {
+    return new ArrayObservable(arr, scheduler || Scheduler.global.get());
   }
 }
 
