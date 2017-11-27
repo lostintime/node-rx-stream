@@ -35,7 +35,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
 
   constructor(private readonly _out: Subscriber<B>,
               private readonly _errors: Throwable[],
-              private readonly _stateGetAndSet: (newState: FlatMapState.Type) => FlatMapState.Type,
+              private readonly _stateGetAndSet: (newState: FlatMapState) => FlatMapState,
               private readonly _delayErrors: boolean,
               private readonly _asyncUpstreamAck: FutureMaker<SyncAck>,
               private readonly _sendOnComplete: () => void,
@@ -120,7 +120,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
 
 export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
   private _errors: Throwable[] = [];
-  private _state: FlatMapState.Type = FlatMapState.WaitOnNextChild(Continue);
+  private _state: FlatMapState = FlatMapState.WaitOnNextChild(Continue);
 
   constructor(private readonly _out: Subscriber<B>,
               private readonly _fn: (a: A) => ObservableInstance<B>,
@@ -137,7 +137,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
       // No longer allowed to stream errors downstream
       streamErrors = false;
 
-      this._state = FlatMapState.WaitOnActiveChild as FlatMapState.Type;
+      this._state = FlatMapState.WaitOnActiveChild as FlatMapState;
 
       let cancelable = child.unsafeSubscribeFn(new ChildSubscriber(
         this._out,
@@ -155,7 +155,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         this.scheduler
       ));
 
-      const oldState: FlatMapState.Type = this._state;
+      const oldState: FlatMapState = this._state;
       this._state = FlatMapState.Active(cancelable);
 
       switch (oldState.kind) {
@@ -339,3 +339,5 @@ namespace FlatMapState {
     return new States.Active(ref);
   }
 }
+
+export type FlatMapState = FlatMapState.Type;
