@@ -33,7 +33,8 @@ class DebugSubscriber<T> implements Subscriber<T> {
 // const items = Observable.range(0, 10);
 // const items = Observable.empty<number>();
 // const items = Observable.range(0, 10000000);
-const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
+// const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
+const items =Observable.repeatEval(() => 1);
 
 const dbg = new DebugSubscriber();
 const bp = new BackPressuredBufferedSubscriber(dbg, 4);
