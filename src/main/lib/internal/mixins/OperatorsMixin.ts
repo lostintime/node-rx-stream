@@ -9,6 +9,7 @@ import {TakePositiveSubscriber, TakeZeroSubscriber} from "../operators/TakeLeftS
 import TakeByPredicateSubscriber from "../operators/TakeByPredicateSubscriber";
 import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
+import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -47,11 +48,19 @@ export default abstract class OperatorsMixin<A> {
       } else {
         return new TakePositiveSubscriber(n, out);
       }
-    })
+    });
   }
 
   drop(n: number): Observable<A> {
-    return this.liftByOperator((out: Subscriber<A>) => new DropFirstSubscriber(n, out))
+    return this.liftByOperator((out: Subscriber<A>) => new DropFirstSubscriber(n, out));
+  }
+
+  takeLast(n: number): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new TakeLastSubscriber(n, out));
+  }
+
+  last(): Observable<A> {
+    return this.takeLast(1);
   }
 
   takeWhile(p: (elem: A) => boolean): Observable<A> {

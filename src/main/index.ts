@@ -29,12 +29,12 @@ class DebugSubscriber<T> implements Subscriber<T> {
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-const items = Observable.loop();
+// const items = Observable.loop();
 // const items = Observable.range(0, 10);
 // const items = Observable.empty<number>();
 // const items = Observable.range(0, 10000000);
 // const items = Observable.range(0, 100);
-// const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
+const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
 // const items =Observable.repeatEval(() => 1);
 // const items = Observable.evalOnce(() => 123);
 // const items = Observable.pure(1);
@@ -48,13 +48,9 @@ items
 //   // console.log('map item', a);
 //   return `item ${a}`;
 // })
-  .drop(100)
-  .take(10)
-  .takeWhile((n) => n < 103)
-  .dropWhile((n) => n <= 100)
-  .flatMap(s => {
-    // console.log('========================================================>', s);
-    return Observable.items(`a: ${s}`);
-  })
-  .failed()
+  .takeLast(3)
+  // .flatMap(s => {
+  //   // console.log('========================================================>', s);
+  //   return Observable.items(`a: ${s}`);
+  // })
   .subscribe(bp);
