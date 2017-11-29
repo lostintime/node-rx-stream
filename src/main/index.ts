@@ -49,6 +49,7 @@ items
 //   return `item ${a}`;
 // })
   .drop(3)
+  .take(4)
   .flatMap(s => {
     console.log('========================================================>', s);
     return Observable.items(`a: ${s}`);

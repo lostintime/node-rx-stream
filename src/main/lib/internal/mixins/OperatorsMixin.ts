@@ -5,6 +5,7 @@ import MapSubscriber from "../operators/MapSubscriber";
 import FilterSubscriber from "../operators/FilterSubscriber";
 import ConcatMapObservable from "../operators/ConcatMapObservable";
 import DropFirstSubscriber from "../operators/DropFirstSubscriber";
+import {TakePositiveSubscriber, TakeZeroSubscriber} from "../operators/TakeLeftSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -26,6 +27,16 @@ export default abstract class OperatorsMixin<A> {
 
   filter(fn: (a: A) => boolean): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new FilterSubscriber(fn, out));
+  }
+
+  take(n: number): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => {
+      if (n <= 0) {
+        return new TakeZeroSubscriber(out)
+      } else {
+        return new TakePositiveSubscriber(n, out);
+      }
+    })
   }
 
   drop(n: number): Observable<A> {
