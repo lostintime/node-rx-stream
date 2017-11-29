@@ -24,8 +24,16 @@ export default abstract class OperatorsMixin<A> {
     return this.concatMap(fn);
   }
 
+  flatMapDelayErrors<B>(fn: (a: A) => Observable<B>): Observable<B> {
+    return this.concatMapDelayErrors(fn);
+  }
+
   concatMap<B>(fn: (a: A) => Observable<B>): Observable<B> {
     return new ConcatMapObservable(this, fn, false);
+  }
+
+  concatMapDelayErrors<B>(fn: (a: A) => Observable<B>): Observable<B> {
+    return new ConcatMapObservable(this, fn, true);
   }
 
   filter(fn: (a: A) => boolean): Observable<A> {

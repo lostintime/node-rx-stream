@@ -13,7 +13,11 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   flatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
 
+  flatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+
   concatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+
+  concatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
 
   filter: (fn: (a: A) => boolean) => ObservableInstance<A>;
 
