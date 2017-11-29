@@ -9,6 +9,7 @@ import ArrayObservable from "./internal/builders/ArrayObservable";
 import NeverObservable from "./internal/builders/NeverObservable";
 import EvalAlwaysObservable from "./internal/builders/EvalAlwaysObservable";
 import RepeatEvalObservable from "./internal/builders/RepeatEvalObservable";
+import EvalOnceObservable from "./internal/builders/EvalOnceObservable";
 
 applyMixins(ObservableInstance, [OperatorsMixin]);
 
@@ -53,8 +54,12 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
     return new EvalAlwaysObservable(fn);
   }
 
-  static repeatEval<A>(task: () => A): Observable<A> {
-    return new RepeatEvalObservable(task);
+  static evalOnce<A>(fn: () => A): Observable<A> {
+    return new EvalOnceObservable(fn);
+  }
+
+  static repeatEval<A>(fn: () => A): Observable<A> {
+    return new RepeatEvalObservable(fn);
   }
 }
 
