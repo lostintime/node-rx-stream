@@ -56,4 +56,5 @@ items
     // console.log('========================================================>', s);
     return Observable.items(`a: ${s}`);
   })
+  .failed()
   .subscribe(bp);

@@ -1,5 +1,5 @@
 import Observable from "../../Observable";
-import {Cancelable, Operator, Subscriber} from "../../Reactive";
+import {Cancelable, Operator, Subscriber, Throwable} from "../../Reactive";
 import LiftByOperatorObservable from "../operators/LiftByOperatorObservable";
 import MapSubscriber from "../operators/MapSubscriber";
 import FilterSubscriber from "../operators/FilterSubscriber";
@@ -8,6 +8,7 @@ import DropFirstSubscriber from "../operators/DropFirstSubscriber";
 import {TakePositiveSubscriber, TakeZeroSubscriber} from "../operators/TakeLeftSubscriber";
 import TakeByPredicateSubscriber from "../operators/TakeByPredicateSubscriber";
 import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
+import FailedSubscriber from "../operators/FailedSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -51,6 +52,10 @@ export default abstract class OperatorsMixin<A> {
 
   dropWhile(p: (elem: A) => boolean): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new DropByPredicateSubscriber(p, out));
+  }
+
+  failed(): Observable<Throwable> {
+    return this.liftByOperator((out: Subscriber<Throwable>) => new FailedSubscriber(out));
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {

@@ -1,4 +1,4 @@
-import {Cancelable, Operator, Subscriber} from "../Reactive";
+import {Cancelable, Operator, Subscriber, Throwable} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
 
@@ -24,6 +24,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   takeWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
 
   dropWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
+
+  failed: () => ObservableInstance<Throwable>;
 
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }
