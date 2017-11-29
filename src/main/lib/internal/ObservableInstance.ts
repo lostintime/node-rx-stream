@@ -47,5 +47,9 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   bufferWithPressure: (size: number) => ObservableInstance<A>;
 
+  bufferTumbling: (count: number) => ObservableInstance<A[]>;
+
+  bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>;
+
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }

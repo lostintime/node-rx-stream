@@ -12,6 +12,7 @@ import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
 import {Scheduler} from 'funfix';
+import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -84,6 +85,14 @@ export default abstract class OperatorsMixin<A> {
 
   bufferWithPressure(size: number): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new BackPressuredBufferedSubscriber(size, out))
+  }
+
+  bufferTumbling(count: number): Observable<A[]> {
+    return this.bufferSliding(count, count);
+  }
+
+  bufferSliding(count: number, skip: number): Observable<A[]> {
+    return this.liftByOperator((out: Subscriber<A[]>) => new BufferSlidingSubscriber(count, skip, out))
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
