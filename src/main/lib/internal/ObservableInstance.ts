@@ -1,12 +1,22 @@
-import {Cancelable, Operator, Subscriber, Throwable} from "../Reactive";
+import {Ack, Cancelable, Operator, Subscriber, Throwable} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
+import {Scheduler} from "funfix";
+import SubscriberWrap from "./observers/SubscriberWrap";
+
 
 export default abstract class ObservableInstance<A> implements OperatorsMixin<A> {
   abstract unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable;
 
-  subscribe(subscriber: Subscriber<A>): Cancelable {
+  subscribeWith(subscriber: Subscriber<A>): Cancelable {
     return this.unsafeSubscribeFn(new SafeSubscriber<A>(subscriber))
+  }
+
+  subscribe(nextFn?: (elem: A) => Ack,
+            errorFn?: (e: Throwable) => void,
+            completeFn?: () => void,
+            scheduler?: Scheduler): Cancelable {
+    return this.subscribeWith(new SubscriberWrap(nextFn, errorFn, completeFn, scheduler));
   }
 
   map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
@@ -34,6 +44,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   dropWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
 
   failed: () => ObservableInstance<Throwable>;
+
+  bufferWithPressure: (size: number) => ObservableInstance<A>;
 
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }

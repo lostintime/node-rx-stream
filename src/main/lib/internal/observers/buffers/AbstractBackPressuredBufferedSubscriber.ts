@@ -20,8 +20,8 @@ export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> impl
   private _lastIterationAck: Ack = Continue;
   protected _queue: A[] = [];
 
-  constructor(private readonly _out: Subscriber<R>,
-              size: number,
+  constructor(size: number,
+              private readonly _out: Subscriber<R>,
               readonly scheduler: Scheduler = _out.scheduler) {
     if (size < 0) {
       throw new Error("bufferSize must be a strictly positive number");

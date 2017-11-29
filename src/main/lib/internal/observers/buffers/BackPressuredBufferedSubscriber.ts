@@ -3,8 +3,8 @@ import AbstractBackPressuredBufferedSubscriber from "./AbstractBackPressuredBuff
 import {Scheduler} from 'funfix';
 
 export default class BackPressuredBufferedSubscriber<A> extends AbstractBackPressuredBufferedSubscriber<A, A> {
-  constructor(out: Subscriber<A>, size: number, scheduler: Scheduler = out.scheduler) {
-    super(out, size, scheduler);
+  constructor(size: number, out: Subscriber<A>, scheduler: Scheduler = out.scheduler) {
+    super(size, out, scheduler);
   }
 
   protected fetchNext(): A | null {

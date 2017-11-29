@@ -4,8 +4,8 @@ import {Scheduler} from 'funfix';
 
 export default class BatchedBufferedSubscriber<A> extends AbstractBackPressuredBufferedSubscriber<A, A[]> {
 
-  constructor(out: Subscriber<any>, size: number, scheduler: Scheduler = out.scheduler) {
-    super(out, size, scheduler);
+  constructor(size: number, out: Subscriber<any>, scheduler: Scheduler = out.scheduler) {
+    super(size, out, scheduler);
   }
 
   protected fetchNext(): A[] | null {

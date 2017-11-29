@@ -1,5 +1,5 @@
 import Observable from "../../Observable";
-import {Cancelable, Operator, Subscriber, Throwable} from "../../Reactive";
+import {Ack, Cancelable, Operator, Subscriber, Throwable} from "../../Reactive";
 import LiftByOperatorObservable from "../operators/LiftByOperatorObservable";
 import MapSubscriber from "../operators/MapSubscriber";
 import FilterSubscriber from "../operators/FilterSubscriber";
@@ -10,12 +10,19 @@ import TakeByPredicateSubscriber from "../operators/TakeByPredicateSubscriber";
 import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
+import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
+import {Scheduler} from 'funfix';
 
 
 export default abstract class OperatorsMixin<A> {
   abstract unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable;
 
-  abstract subscribe(subscriber: Subscriber<A>): Cancelable;
+  abstract subscribeWith(subscriber: Subscriber<A>): Cancelable;
+
+  abstract subscribe(nextFn?: (elem: A) => Ack,
+                     errorFn?: (e: Throwable) => void,
+                     completeFn?: () => void,
+                     scheduler?: Scheduler): Cancelable;
 
   map<B>(fn: (a: A) => B): Observable<B> {
     return this.liftByOperator((out: Subscriber<B>) => new MapSubscriber(fn, out))
@@ -73,6 +80,10 @@ export default abstract class OperatorsMixin<A> {
 
   failed(): Observable<Throwable> {
     return this.liftByOperator((out: Subscriber<Throwable>) => new FailedSubscriber(out));
+  }
+
+  bufferWithPressure(size: number): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new BackPressuredBufferedSubscriber(size, out))
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
