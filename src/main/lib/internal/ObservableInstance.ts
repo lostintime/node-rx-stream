@@ -21,5 +21,7 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   drop: (n: number) => ObservableInstance<A>;
 
+  takeWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
+  
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }

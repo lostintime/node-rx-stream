@@ -6,6 +6,7 @@ import FilterSubscriber from "../operators/FilterSubscriber";
 import ConcatMapObservable from "../operators/ConcatMapObservable";
 import DropFirstSubscriber from "../operators/DropFirstSubscriber";
 import {TakePositiveSubscriber, TakeZeroSubscriber} from "../operators/TakeLeftSubscriber";
+import TakeByPredicateSubscriber from "../operators/TakeByPredicateSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -41,6 +42,10 @@ export default abstract class OperatorsMixin<A> {
 
   drop(n: number): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new DropFirstSubscriber(n, out))
+  }
+
+  takeWhile(p: (elem: A) => boolean): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new TakeByPredicateSubscriber(p, out));
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
