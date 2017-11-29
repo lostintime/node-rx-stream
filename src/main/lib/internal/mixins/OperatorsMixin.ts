@@ -1,10 +1,10 @@
 import Observable from "../../Observable";
 import {Cancelable, Operator, Subscriber} from "../../Reactive";
 import LiftByOperatorObservable from "../operators/LiftByOperatorObservable";
-import MapOperator from "../operators/MapOperator";
-import FilterOperator from "../operators/FilterOperator";
+import MapSubscriber from "../operators/MapSubscriber";
+import FilterSubscriber from "../operators/FilterSubscriber";
 import ConcatMapObservable from "../operators/ConcatMapObservable";
-import DropFirstOperator from "../operators/DropFirstOperator";
+import DropFirstSubscriber from "../operators/DropFirstSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -13,7 +13,7 @@ export default abstract class OperatorsMixin<A> {
   abstract subscribe(subscriber: Subscriber<A>): Cancelable;
 
   map<B>(fn: (a: A) => B): Observable<B> {
-    return this.liftByOperator((out: Subscriber<B>) => new MapOperator(fn, out))
+    return this.liftByOperator((out: Subscriber<B>) => new MapSubscriber(fn, out))
   }
 
   flatMap<B>(fn: (a: A) => Observable<B>): Observable<B> {
@@ -25,11 +25,11 @@ export default abstract class OperatorsMixin<A> {
   }
 
   filter(fn: (a: A) => boolean): Observable<A> {
-    return this.liftByOperator((out: Subscriber<A>) => new FilterOperator(fn, out));
+    return this.liftByOperator((out: Subscriber<A>) => new FilterSubscriber(fn, out));
   }
 
   drop(n: number): Observable<A> {
-    return this.liftByOperator((out: Subscriber<A>) => new DropFirstOperator(n, out))
+    return this.liftByOperator((out: Subscriber<A>) => new DropFirstSubscriber(n, out))
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {

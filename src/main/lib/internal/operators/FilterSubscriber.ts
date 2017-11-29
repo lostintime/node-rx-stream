@@ -2,7 +2,7 @@ import {Ack, Continue, Stop, Subscriber, Throwable} from "../../Reactive";
 import {Scheduler} from 'funfix';
 
 
-export default class FilterOperator<A> implements Subscriber<A> {
+export default class FilterSubscriber<A> implements Subscriber<A> {
   private _isDone: boolean = false;
 
   constructor(private readonly _fn: (a: A) => boolean,

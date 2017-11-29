@@ -2,7 +2,7 @@ import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
 import {Scheduler} from 'funfix';
 
 
-export default class MapOperator<A, B> implements Subscriber<A> {
+export default class MapSubscriber<A, B> implements Subscriber<A> {
   private _isDone: boolean = false;
 
   constructor(private readonly _fn: (a: A) => B,

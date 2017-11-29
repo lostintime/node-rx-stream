@@ -53,4 +53,4 @@ items
     console.log('========================================================>', s);
     return Observable.items(`a: ${s}`);
   })
-  .subscribe(dbg);
+  .subscribe(bp);
