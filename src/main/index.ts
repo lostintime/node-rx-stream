@@ -51,6 +51,7 @@ items
   .drop(100)
   .take(10)
   .takeWhile((n) => n < 103)
+  .dropWhile((n) => n <= 100)
   .flatMap(s => {
     // console.log('========================================================>', s);
     return Observable.items(`a: ${s}`);
