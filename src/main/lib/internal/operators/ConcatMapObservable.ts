@@ -48,7 +48,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
   }
 
   onComplete(): void {
-    this.signalChildOnComplete(this._ack, true);
+    this.signalChildOnComplete(this._ack, false);
   }
 
   onError(e: Throwable): void {
@@ -129,6 +129,12 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
 
   }
 
+  private stateSetAndGet(newState: FlatMapState): FlatMapState {
+    const oldState = this._state;
+    this._state = newState;
+    return oldState;
+  }
+
   onNext(elem: A): Ack {
     let streamErrors = true;
     try {
@@ -137,15 +143,13 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
       // No longer allowed to stream errors downstream
       streamErrors = false;
 
-      this._state = FlatMapState.WaitOnActiveChild as FlatMapState;
+      this.stateSetAndGet(FlatMapState.WaitOnActiveChild);
 
       let cancelable = child.unsafeSubscribeFn(new ChildSubscriber(
         this._out,
         this._errors,
         (newState) => {
-          const oldState = this._state;
-          this._state = newState;
-          return oldState;
+          return this.stateSetAndGet(newState);
         },
         this._delayErrors,
         asyncUpstreamAck,
@@ -155,11 +159,12 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         this.scheduler
       ));
 
-      const oldState: FlatMapState = this._state;
-      this._state = FlatMapState.Active(cancelable);
+      const oldState: FlatMapState = this.stateSetAndGet(FlatMapState.Active(cancelable));
 
       switch (oldState.kind) {
         case 'WaitOnNextChild':
+          // Task execution was synchronous, w00t, so redo state!
+          this.stateSetAndGet(oldState);
           const ack: Ack = oldState.ack;
           if (ack === Continue || ack === Stop) {
             return ack;
@@ -170,24 +175,32 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
             })
           }
         case 'WaitOnActiveChild':
+          // Expected outcome for async observables
           const acAck: AsyncAck = asyncUpstreamAck.future();
           return acAck.recover(e => {
             this.scheduler.reportFailure(e);
             return Stop;
           });
         case 'WaitComplete':
-          this._state = oldState;
+          // Branch that can happen in case the child has finished
+          // already in error, so stop further onNext events.
+          this.stateSetAndGet(oldState);
           return Stop;
         case 'Canceled':
+          // Race condition, oops, now cancel the active task
           cancelable.cancel();
+          // Now restore the state and pretend that this didn't
+          // happen :-) Note that this is probably going to call
+          // `ack.cancel()` a second time, but that's OK
           this.cancel();
           return Stop;
         case 'Active':
-          // TODO report invalid state
+          // This should never, ever happen!
+          // Something is screwed up in our state machine :-(
           cancelable.cancel();
           return Stop;
         default:
-          // TODO report invalid state
+          // FIXME - find why compiler is not satisfied by specified cases!
           return Stop;
       }
     } catch (e) {
@@ -218,12 +231,12 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
     switch (this._state.kind) {
       case 'Active':
         const activeRef = this._state.ref;
-        this._state = FlatMapState.Canceled;
+        this.stateSetAndGet(FlatMapState.Canceled);
         activeRef.cancel();
         break;
       case 'WaitComplete':
         const waitRef = this._state.ref;
-        this._state = FlatMapState.Canceled;
+        this.stateSetAndGet(FlatMapState.Canceled);
         waitRef.cancel();
         break;
       case 'Canceled':
@@ -246,26 +259,25 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         childRef = new EmptyCancelable();
     }
 
-    const oldState = this._state;
-    this._state = FlatMapState.WaitComplete(ex, childRef);
+    const oldState = this.stateSetAndGet(FlatMapState.WaitComplete(ex, childRef));
 
     switch (oldState.kind) {
       case 'WaitOnNextChild':
         if (ex.isEmpty()) {
           this.sendOnComplete();
         } else {
-          this._out.onError(ex);
+          this._out.onError(ex.get());
         }
-        this._state = FlatMapState.Canceled;
+        this.stateSetAndGet(FlatMapState.Canceled);
         break;
       case 'Active':
         // pass;
         break;
       case 'WaitComplete':
-        this._state = oldState;
+        this.stateSetAndGet(oldState);
         break;
       case 'Canceled':
-        this._state = oldState;
+        this.stateSetAndGet(oldState);
         break;
       case 'WaitOnActiveChild':
         // TODO report invalid state
@@ -284,7 +296,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
 }
 
 namespace FlatMapState {
-  namespace States {
+  export namespace States {
     export class WaitOnNextChild {
       readonly kind = "WaitOnNextChild";
 
@@ -316,13 +328,6 @@ namespace FlatMapState {
     }
   }
 
-  export type Type =
-    States.WaitOnNextChild
-    | States.WaitOnActiveChild
-    | States.Canceled
-    | States.WaitComplete
-    | States.Active;
-
   export function WaitOnNextChild(ack: Ack): States.WaitOnNextChild {
     return new States.WaitOnNextChild(ack);
   }
@@ -340,4 +345,8 @@ namespace FlatMapState {
   }
 }
 
-export type FlatMapState = FlatMapState.Type;
+export type FlatMapState = FlatMapState.States.WaitOnNextChild
+  | FlatMapState.States.WaitOnActiveChild
+  | FlatMapState.States.Canceled
+  | FlatMapState.States.WaitComplete
+  | FlatMapState.States.Active;

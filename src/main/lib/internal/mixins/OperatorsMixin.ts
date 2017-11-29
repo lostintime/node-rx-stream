@@ -4,6 +4,7 @@ import LiftByOperatorObservable from "../operators/LiftByOperatorObservable";
 import MapOperator from "../operators/MapOperator";
 import FilterOperator from "../operators/FilterOperator";
 import ConcatMapObservable from "../operators/ConcatMapObservable";
+import DropFirstOperator from "../operators/DropFirstOperator";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -25,6 +26,10 @@ export default abstract class OperatorsMixin<A> {
 
   filter(fn: (a: A) => boolean): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new FilterOperator(fn, out));
+  }
+
+  drop(n: number): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new DropFirstOperator(n, out))
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
