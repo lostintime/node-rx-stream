@@ -26,16 +26,17 @@ items
 //   })
 //   .bufferWithPressure(4)
 //   .subscribe();
-  .map((i => {
-    // if (i == 7) {
-    //   throw new Error('something went wrong');
-    // }
-    return i * 100
-  }))
-  .mapIO(i => IO.pure(i / 10))
-  .mapFuture(i => {
-    return Future.pure(i * 1000).delayResult(1000)
-  })
+  .scan(() => 0, (s, a) => s + a)
+  // .map((i => {
+  //   // if (i == 7) {
+  //   //   throw new Error('something went wrong');
+  //   // }
+  //   return i * 100
+  // }))
+  // .mapIO(i => IO.pure(i / 10))
+  // .mapFuture(i => {
+  //   return Future.pure(i * 1000).delayResult(1000)
+  // })
   // .bufferTumbling(5)
   // .subscribe(
   //   undefined,

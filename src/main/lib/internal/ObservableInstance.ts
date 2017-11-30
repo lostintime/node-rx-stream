@@ -6,10 +6,10 @@ import SubscriberWrap from "./observers/SubscriberWrap";
 
 
 export default abstract class ObservableInstance<A> implements OperatorsMixin<A> {
-  abstract unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable;
+  abstract unsafeSubscribeFn(out: Subscriber<A>): Cancelable;
 
-  subscribeWith(subscriber: Subscriber<A>): Cancelable {
-    return this.unsafeSubscribeFn(new SafeSubscriber<A>(subscriber))
+  subscribeWith(out: Subscriber<A>): Cancelable {
+    return this.unsafeSubscribeFn(new SafeSubscriber<A>(out))
   }
 
   subscribe(nextFn?: (elem: A) => Ack,
@@ -32,6 +32,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   concatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
 
   concatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+
+  scan: <S>(seed: () => S, op: (s: S, a: A) => S) => ObservableInstance<S>;
 
   filter: (fn: (a: A) => boolean) => ObservableInstance<A>;
 

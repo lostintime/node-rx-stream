@@ -14,6 +14,7 @@ import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredB
 import {Scheduler, IO, Future} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
+import ScanObservable from "../operators/ScanObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -58,6 +59,10 @@ export default abstract class OperatorsMixin<A> {
 
   concatMapDelayErrors<B>(fn: (a: A) => Observable<B>): Observable<B> {
     return new ConcatMapObservable(this, fn, true);
+  }
+
+  scan<S>(seed: () => S, op: (s: S, a: A) => S): Observable<S> {
+    return new ScanObservable(this, seed, op);
   }
 
   filter(fn: (a: A) => boolean): Observable<A> {
