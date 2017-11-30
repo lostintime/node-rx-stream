@@ -1,5 +1,6 @@
 import Observable from "./lib/Observable";
 import {Continue} from "./lib/Reactive";
+import {IO} from 'funfix';
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
@@ -25,6 +26,13 @@ items
 //   })
 //   .bufferWithPressure(4)
 //   .subscribe();
+  .map((i => {
+    // if (i == 7) {
+    //   throw new Error('something went wrong');
+    // }
+    return i * 100
+  }))
+  .mapIO(i => IO.pure(i / 10))
   .bufferTumbling(5)
   // .subscribe(
   //   undefined,

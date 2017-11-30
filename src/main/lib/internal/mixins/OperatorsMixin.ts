@@ -11,8 +11,9 @@ import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
-import {Scheduler} from 'funfix';
+import {Scheduler, IO, Future} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
+import MapIOObservable from "../operators/MapIOObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -27,6 +28,10 @@ export default abstract class OperatorsMixin<A> {
 
   map<B>(fn: (a: A) => B): Observable<B> {
     return this.liftByOperator((out: Subscriber<B>) => new MapSubscriber(fn, out))
+  }
+
+  mapIO<B>(fn: (a: A) => IO<B>): Observable<B> {
+    return new MapIOObservable(this, fn);
   }
 
   flatMap<B>(fn: (a: A) => Observable<B>): Observable<B> {
