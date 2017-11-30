@@ -34,6 +34,16 @@ export default abstract class OperatorsMixin<A> {
     return new MapIOObservable(this, fn);
   }
 
+  mapFuture<B>(fn: (a: A) => Future<B>): Observable<B> {
+    return new MapIOObservable(this, (elem: A) => {
+      try {
+        return IO.fromFuture(fn(elem))
+      } catch (e) {
+        return IO.raise(e);
+      }
+    });
+  }
+
   flatMap<B>(fn: (a: A) => Observable<B>): Observable<B> {
     return this.concatMap(fn);
   }

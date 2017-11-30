@@ -1,7 +1,7 @@
 import {Ack, Cancelable, Operator, Subscriber, Throwable} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
-import {Scheduler, IO} from "funfix";
+import {Scheduler, IO, Future} from "funfix";
 import SubscriberWrap from "./observers/SubscriberWrap";
 
 
@@ -22,6 +22,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
 
   mapIO: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>;
+
+  mapFuture: <B>(fn: (a: A) => Future<B>) => ObservableInstance<B>;
 
   flatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
 
