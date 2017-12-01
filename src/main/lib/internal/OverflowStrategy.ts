@@ -9,7 +9,6 @@ export namespace OverflowStrategy {
   }
 
   export namespace Type {
-    
     export interface Unbounded {
       readonly _tag: 'Unbounded'
       readonly isEvicted: boolean
