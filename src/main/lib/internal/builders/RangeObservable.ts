@@ -20,7 +20,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     // const s = subscriber.scheduler;
     if (!RangeObservable.isInRange(this._from, this._until, this._step)) {
       subscriber.onComplete();
-      return new EmptyCancelable();
+      return EmptyCancelable;
     } else {
       const cancelable = new BooleanCancelable();
 

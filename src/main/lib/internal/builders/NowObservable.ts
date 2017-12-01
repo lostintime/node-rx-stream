@@ -15,6 +15,6 @@ export default class NowObservable<T> extends ObservableInstance<T> {
     subscriber.onNext(this._value);
     subscriber.onComplete();
 
-    return new EmptyCancelable();
+    return EmptyCancelable;
   }
 }

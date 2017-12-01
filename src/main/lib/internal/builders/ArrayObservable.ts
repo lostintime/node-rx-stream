@@ -15,7 +15,7 @@ export default class ArrayObservable<A>  extends ObservableInstance<A> {
     // const s = subscriber.scheduler;
     if (this._arr.length <= 0) {
       subscriber.onComplete();
-      return new EmptyCancelable();
+      return EmptyCancelable;
     } else {
       const cancelable = new BooleanCancelable();
 

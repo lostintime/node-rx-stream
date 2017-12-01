@@ -61,7 +61,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
   }
 
   private signalChildOnError(ex: Throwable): void {
-    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), new EmptyCancelable()));
+    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), EmptyCancelable));
     switch (oldState.kind) {
       case 'WaitOnActiveChild':
         this._out.onError(ex);
@@ -256,7 +256,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         childRef = this._state.ref;
         break;
       default:
-        childRef = new EmptyCancelable();
+        childRef = EmptyCancelable;
     }
 
     const oldState = this.stateSetAndGet(FlatMapState.WaitComplete(ex, childRef));

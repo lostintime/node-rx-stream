@@ -4,7 +4,7 @@ import EmptyCancelable from "../cancelables/EmptyCancelable";
 
 class NeverObservableImpl extends ObservableInstance<never> {
   unsafeSubscribeFn(subscriber: Subscriber<never>): Cancelable {
-    return new EmptyCancelable();
+    return EmptyCancelable;
   }
 }
 

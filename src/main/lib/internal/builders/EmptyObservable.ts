@@ -6,6 +6,6 @@ export default class EmptyObservable<A>  extends ObservableInstance<A> {
   unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable {
     subscriber.onComplete();
 
-    return new EmptyCancelable();
+    return EmptyCancelable;
   }
 }

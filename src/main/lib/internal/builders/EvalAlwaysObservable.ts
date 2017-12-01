@@ -22,6 +22,6 @@ export default class EvalAlwaysObservable<A> extends ObservableInstance<A> {
       }
     }
 
-    return new EmptyCancelable();
+    return EmptyCancelable;
   }
 }

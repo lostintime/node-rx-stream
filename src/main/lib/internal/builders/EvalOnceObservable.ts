@@ -42,6 +42,6 @@ export default class EvalOnceObservable<A> extends ObservableInstance<A> {
 
     this.signalResult(subscriber, this._result, this._errorThrown);
 
-    return new EmptyCancelable();
+    return EmptyCancelable;
   }
 }

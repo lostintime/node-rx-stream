@@ -62,7 +62,7 @@ export default class ScanObservable<A, R> extends ObservableInstance<R> {
         out.onError(e);
       }
 
-      return new EmptyCancelable();
+      return EmptyCancelable;
     }
   }
 }
