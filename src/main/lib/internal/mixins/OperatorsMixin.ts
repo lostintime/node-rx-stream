@@ -157,6 +157,10 @@ export default abstract class OperatorsMixin<A> {
     });
   }
 
+  lastOption(): IO<Option<A>> {
+    return this.map((e) => Some(e)).lastOrElse(() => None);
+  }
+
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
     return new LiftByOperatorObservable(this, operator);
   }
