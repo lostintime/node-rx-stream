@@ -1,4 +1,4 @@
-import {Ack,Operator, Subscriber} from "../Reactive";
+import {Ack, Operator, Subscriber} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
 import {Scheduler, IO, Future, Cancelable, Throwable} from "funfix";
@@ -34,6 +34,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   concatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
 
   scan: <S>(seed: () => S, op: (s: S, a: A) => S) => ObservableInstance<S>;
+
+  scanTask: <S>(seed: () => IO<S>, op: (s: S, a: A) => IO<S>) => ObservableInstance<S>;
 
   filter: (fn: (a: A) => boolean) => ObservableInstance<A>;
 

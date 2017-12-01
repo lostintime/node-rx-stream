@@ -27,14 +27,14 @@ export default class MapIOObservable<A, B>  extends ObservableInstance<B> {
 
 class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
 
-  private _state: MapTaskState = MapTaskState.WaitOnNext;
+  private _state: MapIOState = MapIOState.WaitOnNext;
 
   constructor(private readonly _out: Subscriber<B>,
               private readonly _fn: (elem: A) => IO<B>,
               readonly scheduler = _out.scheduler) {
   }
 
-  private stateCompareAndSet(expect: MapTaskState, update: MapTaskState): boolean {
+  private stateCompareAndSet(expect: MapIOState, update: MapIOState): boolean {
     if (this._state === expect) {
       this._state = update;
       return true;
@@ -43,18 +43,18 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
     return false;
   }
 
-  private stateGetAndSet(update: MapTaskState): MapTaskState {
+  private stateGetAndSet(update: MapIOState): MapIOState {
     const previous = this._state;
     this._state = update;
     return previous;
   }
 
   cancel(): void {
-    const current: MapTaskState = this._state;
+    const current: MapIOState = this._state;
     // TODO cleanup, original code designed for parallelism
     switch (current._tag) {
       case 'Active':
-        if (this.stateCompareAndSet(current, MapTaskState.Canceled)) {
+        if (this.stateCompareAndSet(current, MapIOState.Canceled)) {
           current.ref.cancel();
         } else {
           this.cancel() // retry
@@ -62,7 +62,7 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
         break;
       case 'WaitComplete':
         if (current.ref !== null) {
-          if (this.stateCompareAndSet(current, MapTaskState.Canceled)) {
+          if (this.stateCompareAndSet(current, MapIOState.Canceled)) {
             current.ref.cancel();
           } else {
             this.cancel(); // retry
@@ -70,12 +70,12 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
         }
         break;
       case 'WaitOnNext':
-        if (!this.stateCompareAndSet(current, MapTaskState.Canceled)) {
+        if (!this.stateCompareAndSet(current, MapIOState.Canceled)) {
           this.cancel(); // retry
         }
         break;
       case 'WaitActiveTask':
-        if (!this.stateCompareAndSet(current, MapTaskState.Canceled)) {
+        if (!this.stateCompareAndSet(current, MapIOState.Canceled)) {
           this.cancel(); // retry
         }
         break;
@@ -89,7 +89,7 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
     let streamErrors = true;
     try {
       const task: IO<SyncAck> = this._fn(elem).transformWith(error => {
-        const previous = this.stateGetAndSet(MapTaskState.WaitComplete(Some(error), null));
+        const previous = this.stateGetAndSet(MapIOState.WaitComplete(Some(error), null));
         switch (previous._tag) {
           case 'WaitActiveTask':
             return IO.once(() => {
@@ -118,7 +118,7 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
         }
       }, value => {
         const next = this._out.onNext(value);
-        const previous = this.stateGetAndSet(MapTaskState.WaitOnNext);
+        const previous = this.stateGetAndSet(MapIOState.WaitOnNext);
         switch (previous._tag) {
           case 'WaitActiveTask':
             if (next === Stop || next === Continue) {
@@ -151,14 +151,14 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
       });
 
       streamErrors = false;
-      this.stateGetAndSet(MapTaskState.WaitActiveTask);
+      this.stateGetAndSet(MapIOState.WaitActiveTask);
 
       const ack = task.run(this.scheduler);
 
-      const previous: MapTaskState = this.stateGetAndSet(MapTaskState.Active(ack));
+      const previous: MapIOState = this.stateGetAndSet(MapIOState.Active(ack));
       switch (previous._tag) {
         case 'WaitOnNext':
-          this.stateGetAndSet(MapTaskState.WaitOnNext);
+          this.stateGetAndSet(MapIOState.WaitOnNext);
           return Ack.syncTryFlatten(ack, this.scheduler);
         case 'WaitActiveTask':
           return ack;
@@ -199,7 +199,7 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
         break;
     }
 
-    const previous = this.stateGetAndSet(MapTaskState.WaitComplete(ex, childRef));
+    const previous = this.stateGetAndSet(MapIOState.WaitComplete(ex, childRef));
     switch (previous._tag) {
       case 'WaitOnNext':
         if (ex.isEmpty()) {
@@ -212,7 +212,7 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
       case 'Active':
         break;
       case 'WaitActiveTask':
-        this.reportInvalidState(MapTaskState.WaitActiveTask, "signalFinish");
+        this.reportInvalidState(MapIOState.WaitActiveTask, "signalFinish");
         break;
     }
   }
@@ -225,12 +225,12 @@ class MapAsyncSubscriber<A, B> implements Subscriber<A>, Cancelable {
     this.signalFinish(Some(e));
   }
 
-  private reportInvalidState(state: MapTaskState, method: string): void {
+  private reportInvalidState(state: MapIOState, method: string): void {
     this.scheduler.reportFailure(new Error(`State ${state._tag} in MapIOSubscriber.${method} is invalid`))
   }
 }
 
-namespace MapTaskState {
+export namespace MapIOState {
   export namespace Type {
     export type WaitOnNext = {
       readonly _tag: 'WaitOnNext'
@@ -281,8 +281,8 @@ namespace MapTaskState {
   }
 }
 
-type MapTaskState = MapTaskState.Type.WaitOnNext
-  | MapTaskState.Type.WaitActiveTask
-  | MapTaskState.Type.Canceled
-  | MapTaskState.Type.WaitComplete
-  | MapTaskState.Type.Active;
+export type MapIOState = MapIOState.Type.WaitOnNext
+  | MapIOState.Type.WaitActiveTask
+  | MapIOState.Type.Canceled
+  | MapIOState.Type.WaitComplete
+  | MapIOState.Type.Active;

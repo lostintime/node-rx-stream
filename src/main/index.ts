@@ -26,7 +26,7 @@ items
 //   })
 //   .bufferWithPressure(4)
 //   .subscribe();
-  .scan(() => 0, (s, a) => s + a)
+  .scanTask(() => IO.pure(0), (s, a) => IO.pure(s + a).delayResult(100))
   // .map((i => {
   //   // if (i == 7) {
   //   //   throw new Error('something went wrong');

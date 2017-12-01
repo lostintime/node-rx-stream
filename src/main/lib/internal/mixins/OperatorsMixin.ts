@@ -15,6 +15,7 @@ import {Scheduler, IO, Future, Cancelable, Throwable} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
 import ScanObservable from "../operators/ScanObservable";
+import ScanTaskObservable from "../operators/ScanTaskObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -63,6 +64,10 @@ export default abstract class OperatorsMixin<A> {
 
   scan<S>(seed: () => S, op: (s: S, a: A) => S): Observable<S> {
     return new ScanObservable(this, seed, op);
+  }
+
+  scanTask<S>(seed: () => IO<S>, op: (s: S, a: A) => IO<S>): Observable<S> {
+    return new ScanTaskObservable(this, seed, op);
   }
 
   filter(fn: (a: A) => boolean): Observable<A> {
