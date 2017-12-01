@@ -1,5 +1,5 @@
-import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from "funfix";
+import {Ack, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from "funfix";
 
 export default class TakeByPredicateSubscriber<A> implements Subscriber<A> {
   private _isActive = true;

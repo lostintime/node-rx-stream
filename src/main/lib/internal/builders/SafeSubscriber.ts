@@ -1,5 +1,5 @@
-import {Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOnContinue, Throwable} from "../../Reactive";
-import {Scheduler, Try, FutureMaker} from 'funfix';
+import {Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOnContinue} from "../../Reactive";
+import {Scheduler, Try, FutureMaker, Throwable} from 'funfix';
 
 
 export default class SafeSubscriber<T> implements Subscriber<T> {

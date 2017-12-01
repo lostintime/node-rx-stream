@@ -1,5 +1,5 @@
-import {Ack, ackSyncOnContinue, Continue, Stop, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from 'funfix';
+import {Ack, ackSyncOnContinue, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from 'funfix';
 
 
 export default class BufferSlidingSubscriber<A> implements Subscriber<A> {

@@ -1,5 +1,5 @@
-import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from 'funfix';
+import {Ack, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from 'funfix';
 
 /**
  * This is an optimization for TakePositiveSubscriber

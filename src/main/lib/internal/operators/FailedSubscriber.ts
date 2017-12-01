@@ -1,5 +1,5 @@
-import {Ack, Continue, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from 'funfix';
+import {Ack, Continue, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from 'funfix';
 
 export default class FailedSubscriber<A> implements Subscriber<A> {
 

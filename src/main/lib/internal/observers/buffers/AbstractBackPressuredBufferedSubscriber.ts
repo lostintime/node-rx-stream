@@ -1,5 +1,5 @@
-import {Ack, AsyncAck, Continue, Stop, Subscriber, SyncAck, Throwable} from "../../../Reactive";
-import {Scheduler, FutureMaker, id} from 'funfix';
+import {Ack, AsyncAck, Continue, Stop, Subscriber, SyncAck} from "../../../Reactive";
+import {Scheduler, FutureMaker, id, Throwable} from 'funfix';
 
 function nextPowerOf2(nr: number): number {
   if (nr < 0) {

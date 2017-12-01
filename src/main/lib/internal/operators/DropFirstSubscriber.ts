@@ -1,5 +1,5 @@
-import {Ack, Continue, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from 'funfix';
+import {Ack, Continue, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from 'funfix';
 
 export default class DropFirstSubscriber<A> implements Subscriber<A> {
   private _count: number = 0;

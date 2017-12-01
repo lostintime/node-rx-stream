@@ -1,9 +1,8 @@
 import ObservableInstance from "../ObservableInstance";
 import {
-  Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure,
-  Throwable, AsyncAck
+  Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure, AsyncAck
 } from "../../Reactive";
-import {Scheduler, Option, None, Some, FutureMaker, Cancelable} from 'funfix';
+import {Scheduler, Option, None, Some, FutureMaker, Cancelable, Throwable} from 'funfix';
 
 
 export default class ConcatMapObservable<A, B> extends ObservableInstance<B> {

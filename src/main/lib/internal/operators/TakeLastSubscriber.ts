@@ -1,5 +1,5 @@
-import {Ack, Continue, Stop, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler} from 'funfix';
+import {Ack, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Throwable} from 'funfix';
 import Observable from "../../Observable";
 
 export default class TakeLastSubscriber<A> implements Subscriber<A> {

@@ -1,6 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
-import {Scheduler, Cancelable} from 'funfix';
+import {Ack, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Cancelable, Throwable} from 'funfix';
 
 
 class ScanSubscriber<A, R> implements Subscriber<A> {

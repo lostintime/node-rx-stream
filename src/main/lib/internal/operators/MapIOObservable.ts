@@ -1,6 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {IO, Option, Some, None, Cancelable} from 'funfix'
-import {Ack, Continue, Stop, Subscriber, SyncAck, Throwable} from "../../Reactive";
+import {IO, Option, Some, None, Cancelable, Throwable} from 'funfix'
+import {Ack, Continue, Stop, Subscriber, SyncAck} from "../../Reactive";
 
 export default class MapIOObservable<A, B>  extends ObservableInstance<B> {
 

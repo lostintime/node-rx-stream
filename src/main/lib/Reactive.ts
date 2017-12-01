@@ -1,7 +1,4 @@
-import {Future, Try, Success, Scheduler} from 'funfix';
-import * as funfix from 'funfix';
-
-export type Throwable = funfix.Throwable;
+import {Future, Try, Success, Scheduler, Throwable} from 'funfix';
 
 export type AckStop = 'stop';
 export type AckContinue = 'continue';
