@@ -1,5 +1,6 @@
 import {Option} from 'funfix';
 
+
 export namespace OverflowStrategy {
   function require(expr: boolean, message: string): void {
     if (!expr) {
@@ -8,46 +9,44 @@ export namespace OverflowStrategy {
   }
 
   export namespace Type {
-    interface BaseOverflowStrategy {
+    
+    export interface Unbounded {
+      readonly _tag: 'Unbounded'
       readonly isEvicted: boolean
-      readonly isSynchronous: boolean
+      readonly isSynchronous: true
     }
 
-    export interface Unbounded extends BaseOverflowStrategy {
-      readonly _tag: 'Unbounded';
-    }
-
-    export class Fail implements BaseOverflowStrategy {
+    export class Fail {
       readonly _tag = 'Fail';
-      readonly isEvicted = false;
-      readonly isSynchronous = true;
+      readonly isEvicted: boolean = false;
+      readonly isSynchronous: true = true;
 
       constructor(readonly bufferSize: number) {
         require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
-    export class BackPressure implements BaseOverflowStrategy {
+    export class BackPressure {
       readonly _tag = 'BackPressure';
-      readonly isEvicted = false;
-      readonly isSynchronous = false;
+      readonly isEvicted: boolean = false;
+      readonly isSynchronous: boolean = false;
 
       constructor(readonly bufferSize: number) {
         require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
-    export class DropNew implements BaseOverflowStrategy {
+    export class DropNew {
       readonly _tag = 'DropNew';
-      readonly isEvicted = true;
-      readonly isSynchronous = true;
+      readonly isEvicted: true = true;
+      readonly isSynchronous: true = true;
 
       constructor(readonly bufferSize: number) {
         require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
-    export class DropNewAndSignal<A> implements BaseOverflowStrategy {
+    export class DropNewAndSignal<A> {
       readonly _tag = 'DropNewAndSignal';
       readonly isEvicted = true;
       readonly isSynchronous = true;
@@ -58,7 +57,7 @@ export namespace OverflowStrategy {
       }
     }
 
-    export class DropOld implements BaseOverflowStrategy {
+    export class DropOld {
       readonly _tag = 'DropOld';
       readonly isEvicted = true;
       readonly isSynchronous = true;
@@ -68,7 +67,7 @@ export namespace OverflowStrategy {
       }
     }
 
-    export class DropOldAndSignal<A> implements BaseOverflowStrategy {
+    export class DropOldAndSignal<A> {
       readonly _tag = 'DropOldAndSignal';
       readonly isEvicted = true;
       readonly isSynchronous = true;
@@ -79,7 +78,7 @@ export namespace OverflowStrategy {
       }
     }
 
-    export class ClearBuffer implements BaseOverflowStrategy {
+    export class ClearBuffer {
       readonly _tag = 'ClearBuffer';
       readonly isEvicted = true;
       readonly isSynchronous = true;
@@ -89,7 +88,7 @@ export namespace OverflowStrategy {
       }
     }
 
-    export class ClearBufferAndSignal<A> implements BaseOverflowStrategy {
+    export class ClearBufferAndSignal<A> {
       readonly _tag = 'ClearBufferAndSignal';
       readonly isEvicted = true;
       readonly isSynchronous = true;
@@ -101,10 +100,20 @@ export namespace OverflowStrategy {
     }
   }
 
+  export type Evicted<A> =
+    Type.DropNew
+    | Type.DropNewAndSignal<A>
+    | Type.DropOld
+    | Type.DropOldAndSignal<A>
+    | Type.ClearBuffer
+    | Type.ClearBufferAndSignal<A>;
+
+  export type Synchronous<A> = Type.Unbounded | Type.Fail | Evicted<A>
+
   const Unbounded: Type.Unbounded = {
     _tag: 'Unbounded',
     isEvicted: false,
-    isSynchronous: false
+    isSynchronous: true
   };
 
   export function Fail(bufferSize: number): Type.Fail {
@@ -140,11 +149,4 @@ export namespace OverflowStrategy {
   }
 }
 
-export type OverflowStrategy<A> = OverflowStrategy.Type.Unbounded
-  | OverflowStrategy.Type.BackPressure
-  | OverflowStrategy.Type.DropNew
-  | OverflowStrategy.Type.DropNewAndSignal<A>
-  | OverflowStrategy.Type.DropOld
-  | OverflowStrategy.Type.DropOldAndSignal<A>
-  | OverflowStrategy.Type.ClearBuffer
-  | OverflowStrategy.Type.ClearBufferAndSignal<A>;
+export type OverflowStrategy<A> = OverflowStrategy.Synchronous<A> | OverflowStrategy.Type.BackPressure;
