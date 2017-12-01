@@ -1,7 +1,7 @@
 import {Ack, Operator, Subscriber} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
-import {Scheduler, IO, Future, Cancelable, Throwable} from "funfix";
+import {Scheduler, IO, Future, Cancelable, Throwable, Eval} from "funfix";
 import SubscriberWrap from "./observers/SubscriberWrap";
 
 
@@ -60,6 +60,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   bufferTumbling: (count: number) => ObservableInstance<A[]>;
 
   bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>;
+
+  firstOrElse: (fn: () => A) => IO<A>;
 
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }
