@@ -11,7 +11,7 @@ import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
-import {Scheduler, IO, Future, Cancelable, Throwable, Eval} from 'funfix';
+import {Scheduler, IO, Future, Cancelable, Throwable, Option, Some, None} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
 import ScanObservable from "../operators/ScanObservable";
@@ -126,10 +126,20 @@ export default abstract class OperatorsMixin<A> {
     return this.liftByOperator((out: Subscriber<A[]>) => new BufferSlidingSubscriber(count, skip, out))
   }
 
+  first(): IO<A> {
+    return this.firstOrElse(() => {
+      throw new Error('first on empty observable');
+    });
+  }
+
   firstOrElse(fn: () => A): IO<A> {
     return IO.async((s, cb) => {
       this.unsafeSubscribeFn(new FirstOrElseSubscriber(cb, fn, s));
     })
+  }
+
+  firstOption(): IO<Option<A>> {
+    return this.map((e) => Some(e)).firstOrElse(() => None);
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
