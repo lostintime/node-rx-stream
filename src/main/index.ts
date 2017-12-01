@@ -6,8 +6,8 @@ import {SIGINT} from "constants";
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
 // const items = Observable.loop();
-const items = Observable.range(0, 10);
-// const items = Observable.empty<number>();
+// const items = Observable.range(0, 10);
+const items = Observable.empty<number>();
 // const items = Observable.range(0, 100000000);
 // const items = Observable.range(0, 100);
 // const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
@@ -50,7 +50,7 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
 //   );
 
 items
-  .firstOrElse(() => -1)
+  .lastOrElse(() => -1)
   .forEach((e) => {
     console.log('aici', e);
   })

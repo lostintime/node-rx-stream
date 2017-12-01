@@ -18,6 +18,7 @@ import ScanObservable from "../operators/ScanObservable";
 import ScanTaskObservable from "../operators/ScanTaskObservable";
 import TakeUntilObservable from "../operators/TakeUntilObservable";
 import FirstOrElseSubscriber from "../operators/FirstOrElseSubscriber";
+import LastOrElseSubscriber from "../operators/LastOrElseSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -148,6 +149,12 @@ export default abstract class OperatorsMixin<A> {
 
   exists(p: (a: A) => boolean): IO<boolean> {
     return this.find(p).map(o => o.nonEmpty());
+  }
+
+  lastOrElse(fn: () => A): IO<A> {
+    return IO.async((s, cb) => {
+      this.unsafeSubscribeFn(new LastOrElseSubscriber(cb, fn, s));
+    });
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
