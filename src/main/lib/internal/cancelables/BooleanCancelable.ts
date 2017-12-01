@@ -1,7 +1,11 @@
 import {Cancelable} from "../../Reactive";
 
-// FIXME make me interface
-export default class BooleanCancelable implements Cancelable {
+
+export interface IBooleanCancelable extends Cancelable {
+  isCanceled(): boolean;
+}
+
+export class BooleanCancelableImpl implements IBooleanCancelable {
   private _isCancelled: boolean = false;
 
   isCanceled(): boolean {
@@ -11,4 +15,8 @@ export default class BooleanCancelable implements Cancelable {
   cancel(): void {
     this._isCancelled = true;
   }
+}
+
+export default function BooleanCancelable(): IBooleanCancelable {
+  return new BooleanCancelableImpl();
 }

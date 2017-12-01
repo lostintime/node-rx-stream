@@ -1,5 +1,5 @@
 import {Cancelable} from "../../Reactive";
-import BooleanCancelable from "./BooleanCancelable";
+import {IBooleanCancelable} from "./BooleanCancelable";
 
 export interface AssignableCancelable extends Cancelable {
   assign(value: Cancelable): this
@@ -7,11 +7,10 @@ export interface AssignableCancelable extends Cancelable {
 
 
 export namespace AssignableCancelable {
-  export abstract class Bool extends BooleanCancelable implements AssignableCancelable {
-    abstract assign(value: Cancelable): this;
+  export interface Bool extends AssignableCancelable, IBooleanCancelable {
   }
 
-  export abstract class Multi extends Bool {
-    abstract orderedUpdate(value: Cancelable, order: number): this;
+  export interface Multi extends Bool {
+    orderedUpdate(value: Cancelable, order: number): this;
   }
 }
