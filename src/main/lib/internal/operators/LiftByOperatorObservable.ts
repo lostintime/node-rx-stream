@@ -1,5 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Operator, Subscriber} from "../../Reactive";
+import {Operator, Subscriber} from "../../Reactive";
+import {Cancelable} from 'funfix';
 
 export default class LiftByOperatorObservable<A, B> extends ObservableInstance<B> {
 

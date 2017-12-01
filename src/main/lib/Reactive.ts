@@ -1,9 +1,7 @@
 import {Future, Try, Success, Scheduler} from 'funfix';
 import * as funfix from 'funfix';
 
-export type Throwable = Error | Object;
-
-export type Cancelable = funfix.Cancelable;
+export type Throwable = funfix.Throwable;
 
 export type AckStop = 'stop';
 export type AckContinue = 'continue';

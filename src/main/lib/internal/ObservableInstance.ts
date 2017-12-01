@@ -1,7 +1,7 @@
-import {Ack, Cancelable, Operator, Subscriber, Throwable} from "../Reactive";
+import {Ack,Operator, Subscriber, Throwable} from "../Reactive";
 import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
-import {Scheduler, IO, Future} from "funfix";
+import {Scheduler, IO, Future, Cancelable} from "funfix";
 import SubscriberWrap from "./observers/SubscriberWrap";
 
 

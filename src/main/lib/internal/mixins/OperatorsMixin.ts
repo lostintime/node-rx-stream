@@ -1,5 +1,5 @@
 import Observable from "../../Observable";
-import {Ack, Cancelable, Operator, Subscriber, Throwable} from "../../Reactive";
+import {Ack, Operator, Subscriber, Throwable} from "../../Reactive";
 import LiftByOperatorObservable from "../operators/LiftByOperatorObservable";
 import MapSubscriber from "../operators/MapSubscriber";
 import FilterSubscriber from "../operators/FilterSubscriber";
@@ -11,7 +11,7 @@ import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
-import {Scheduler, IO, Future} from 'funfix';
+import {Scheduler, IO, Future, Cancelable} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
 import ScanObservable from "../operators/ScanObservable";

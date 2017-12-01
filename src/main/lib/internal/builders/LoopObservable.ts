@@ -1,6 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Continue, Stop, Subscriber, SyncAck} from "../../Reactive";
-import {Future, Scheduler, IBoolCancelable, BoolCancelable} from 'funfix';
+import {Continue, Stop, Subscriber, SyncAck} from "../../Reactive";
+import {Future, Scheduler, IBoolCancelable, BoolCancelable, Cancelable} from 'funfix';
 
 
 export default class LoopObservable extends ObservableInstance<number> {

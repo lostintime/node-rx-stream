@@ -1,6 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Ack, AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
-import {Scheduler, Future, IBoolCancelable, BoolCancelable} from "funfix";
+import {Ack, AsyncAck, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Future, Cancelable, IBoolCancelable, BoolCancelable} from "funfix";
 
 export default class RepeatEvalObservable<A> extends ObservableInstance<A> {
 
