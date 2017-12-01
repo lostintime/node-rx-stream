@@ -2,6 +2,7 @@ import {AssignableCancelable} from "./AssignableCancelable";
 import {Cancelable} from "../../Reactive";
 import EmptyCancelable from "./EmptyCancelable";
 
+
 export default class MultiAssignmentCancelable implements AssignableCancelable.Multi {
   private _state: State;
 

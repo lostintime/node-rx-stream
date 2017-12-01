@@ -1,8 +1,7 @@
 import ObservableInstance from "../ObservableInstance";
 import {AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
 import EmptyCancelable from "../cancelables/EmptyCancelable";
-import BooleanCancelable, {IBooleanCancelable} from "../cancelables/BooleanCancelable";
-import {Scheduler} from 'funfix';
+import {Scheduler, IBoolCancelable, BoolCancelable} from 'funfix';
 
 
 export default class RangeObservable extends ObservableInstance<number> {
@@ -22,7 +21,7 @@ export default class RangeObservable extends ObservableInstance<number> {
       subscriber.onComplete();
       return EmptyCancelable;
     } else {
-      const cancelable = BooleanCancelable();
+      const cancelable = BoolCancelable.empty();
 
       this.loop(cancelable, subscriber, this._from);
 
@@ -30,7 +29,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     }
   }
 
-  private loop(cancelable: IBooleanCancelable, downstream: Subscriber<number>, from: number): void {
+  private loop(cancelable: IBoolCancelable, downstream: Subscriber<number>, from: number): void {
     const ack = downstream.onNext(from);
     const nextFrom = from + this._step;
 
@@ -51,7 +50,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     }
   }
 
-  private asyncBoundary(cancelable: IBooleanCancelable, ack: AsyncAck, downstream: Subscriber<number>, from: number): void {
+  private asyncBoundary(cancelable: IBoolCancelable, ack: AsyncAck, downstream: Subscriber<number>, from: number): void {
     ack.onComplete((r) => {
       r.fold((e) => {
         downstream.onError(e);

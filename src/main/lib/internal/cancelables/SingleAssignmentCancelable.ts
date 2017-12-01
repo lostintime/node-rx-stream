@@ -1,6 +1,7 @@
 import {AssignableCancelable} from "./AssignableCancelable";
 import {Cancelable} from "../../Reactive";
 
+
 export default class SingleAssignmentCancelable implements AssignableCancelable.Bool {
   private _state: State = State.Empty;
 

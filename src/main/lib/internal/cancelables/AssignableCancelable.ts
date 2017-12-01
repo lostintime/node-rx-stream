@@ -1,5 +1,5 @@
 import {Cancelable} from "../../Reactive";
-import {IBooleanCancelable} from "./BooleanCancelable";
+import {IBoolCancelable} from 'funfix';
 
 export interface AssignableCancelable extends Cancelable {
   assign(value: Cancelable): this
@@ -7,7 +7,7 @@ export interface AssignableCancelable extends Cancelable {
 
 
 export namespace AssignableCancelable {
-  export interface Bool extends AssignableCancelable, IBooleanCancelable {
+  export interface Bool extends AssignableCancelable, IBoolCancelable {
   }
 
   export interface Multi extends Bool {

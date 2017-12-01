@@ -1,10 +1,9 @@
 import {Future, Try, Success, Scheduler} from 'funfix';
+import * as funfix from 'funfix';
 
 export type Throwable = Error | Object;
 
-export interface Cancelable {
-  cancel(): void;
-}
+export type Cancelable = funfix.Cancelable;
 
 export type AckStop = 'stop';
 export type AckContinue = 'continue';

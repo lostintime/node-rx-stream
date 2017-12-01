@@ -1,7 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
 import {Ack, AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
-import BooleanCancelable, {IBooleanCancelable} from "../cancelables/BooleanCancelable";
-import {Scheduler, Future} from "funfix";
+import {Scheduler, Future, IBoolCancelable, BoolCancelable} from "funfix";
 
 export default class RepeatEvalObservable<A> extends ObservableInstance<A> {
 
@@ -11,12 +10,12 @@ export default class RepeatEvalObservable<A> extends ObservableInstance<A> {
 
   unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable {
     const s = subscriber.scheduler;
-    const cancelable = BooleanCancelable();
+    const cancelable = BoolCancelable.empty();
     this.fastLoop(subscriber, cancelable, s);
     return cancelable;
   }
 
-  private reschedule(ack: AsyncAck, o: Subscriber<A>, c: IBooleanCancelable, s: Scheduler) {
+  private reschedule(ack: AsyncAck, o: Subscriber<A>, c: IBoolCancelable, s: Scheduler) {
     ack.onComplete(r => {
       r.fold((e) => {
         s.reportFailure(e)
@@ -28,7 +27,7 @@ export default class RepeatEvalObservable<A> extends ObservableInstance<A> {
     })
   }
 
-  private fastLoop(o: Subscriber<A>, c: IBooleanCancelable, s: Scheduler): void {
+  private fastLoop(o: Subscriber<A>, c: IBoolCancelable, s: Scheduler): void {
     let ack: Ack;
     try {
       ack = o.onNext(this._eval());
