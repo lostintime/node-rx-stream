@@ -16,6 +16,7 @@ import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
 import ScanObservable from "../operators/ScanObservable";
 import ScanTaskObservable from "../operators/ScanTaskObservable";
+import TakeUntilObservable from "../operators/TakeUntilObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -102,6 +103,10 @@ export default abstract class OperatorsMixin<A> {
 
   dropWhile(p: (elem: A) => boolean): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new DropByPredicateSubscriber(p, out));
+  }
+
+  takeUntil(trigger: Observable<any>): Observable<A> {
+    return new TakeUntilObservable(this, trigger);
   }
 
   failed(): Observable<Throwable> {

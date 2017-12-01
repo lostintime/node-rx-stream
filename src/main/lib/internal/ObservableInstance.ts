@@ -51,6 +51,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   dropWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
 
+  takeUntil: (trigger: ObservableInstance<any>) => ObservableInstance<A>;
+
   failed: () => ObservableInstance<Throwable>;
 
   bufferWithPressure: (size: number) => ObservableInstance<A>;

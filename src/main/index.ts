@@ -14,6 +14,8 @@ const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
 // const items = Observable.evalOnce(() => 123);
 // const items = Observable.pure(1);
 
+const trigger = Observable.pure(0).mapIO(n => IO.pure(n).delayResult(10000));
+
 items
 // .filter(a => a % 2 == 0)
 // .map(a => {
@@ -26,7 +28,7 @@ items
 //   })
 //   .bufferWithPressure(4)
 //   .subscribe();
-  .scanTask(() => IO.pure(0), (s, a) => IO.pure(s + a).delayResult(100))
+  .scanTask(() => IO.pure(0), (s, a) => IO.pure(s + a).delayResult(1000))
   // .map((i => {
   //   // if (i == 7) {
   //   //   throw new Error('something went wrong');
@@ -47,6 +49,7 @@ items
   //       console.log('debug.onComplete');
   //     }
   // )
+  .takeUntil(trigger)
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);
