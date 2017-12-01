@@ -95,8 +95,23 @@ export interface Observer<T> {
   onError(e: Throwable): void;
 }
 
-export interface Subscriber<T> extends Observer<T> {
-  readonly scheduler: Scheduler // FIXME transform to a method
+export namespace Observer {
+  export interface Sync<T> extends Observer<T> {
+    onNext(elem: T): SyncAck;
+  }
+}
+
+interface WithScheduler<T> {
+  readonly scheduler: Scheduler // TODO transform to a method?
+}
+
+export interface Subscriber<T> extends WithScheduler<T>, Observer<T> {
+}
+
+export namespace Subscriber {
+  export interface Sync<T> extends WithScheduler<T>, Observer.Sync<T> {
+
+  }
 }
 
 export type Operator<I, O> = (s: Subscriber<O>) => Subscriber<I>;

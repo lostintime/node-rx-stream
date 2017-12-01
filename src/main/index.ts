@@ -1,6 +1,7 @@
 import Observable from "./lib/Observable";
-import {Continue} from "./lib/Reactive";
-import {IO, Future} from 'funfix';
+import {Continue, Stop} from "./lib/Reactive";
+import {IO, Future, Scheduler, Try, Success, Failure} from 'funfix';
+import {SIGINT} from "constants";
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
@@ -14,7 +15,18 @@ const items = Observable.items(0, 1, 2, 3, 4, 5, 6, 7, 8);
 // const items = Observable.evalOnce(() => 123);
 // const items = Observable.pure(1);
 
-const trigger = Observable.pure(0).mapIO(n => IO.pure(n).delayResult(10000));
+const sigintTrigger = Observable.pure(0)
+  .mapIO(n => IO.async((ec: Scheduler, cb: (a: Try<number>) => void): void => {
+    process.on('SIGINT', () => {
+      cb(Success(1));
+    })
+  }));
+
+sigintTrigger.subscribe((n) => {
+  console.log('got SIGINT');
+  return Continue;
+});
+
 
 items
 // .filter(a => a % 2 == 0)
@@ -49,7 +61,7 @@ items
   //       console.log('debug.onComplete');
   //     }
   // )
-  .takeUntil(trigger)
+  .takeUntil(sigintTrigger)
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);
