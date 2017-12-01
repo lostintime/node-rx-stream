@@ -19,6 +19,7 @@ import ScanTaskObservable from "../operators/ScanTaskObservable";
 import TakeUntilObservable from "../operators/TakeUntilObservable";
 import FirstOrElseSubscriber from "../operators/FirstOrElseSubscriber";
 import LastOrElseSubscriber from "../operators/LastOrElseSubscriber";
+import FoldLeftObservable from "../operators/FoldLeftObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -127,38 +128,52 @@ export default abstract class OperatorsMixin<A> {
     return this.liftByOperator((out: Subscriber<A[]>) => new BufferSlidingSubscriber(count, skip, out))
   }
 
-  first(): IO<A> {
-    return this.firstOrElse(() => {
+  firstL(): IO<A> {
+    return this.firstOrElseL(() => {
       throw new Error('first on empty observable');
     });
   }
 
-  firstOrElse(fn: () => A): IO<A> {
+  firstOrElseL(fn: () => A): IO<A> {
     return IO.async((s, cb) => {
       this.unsafeSubscribeFn(new FirstOrElseSubscriber(cb, fn, s));
     })
   }
 
-  firstOption(): IO<Option<A>> {
-    return this.map((e) => Some(e)).firstOrElse(() => None);
+  firstOptionL(): IO<Option<A>> {
+    return this.map((e) => Some(e)).firstOrElseL(() => None);
   }
 
-  find(p: (a: A) => boolean): IO<Option<A>> {
-    return this.filter(p).firstOption();
+  findL(p: (a: A) => boolean): IO<Option<A>> {
+    return this.filter(p).firstOptionL();
   }
 
-  exists(p: (a: A) => boolean): IO<boolean> {
-    return this.find(p).map(o => o.nonEmpty());
+  existsL(p: (a: A) => boolean): IO<boolean> {
+    return this.findL(p).map(o => o.nonEmpty());
   }
 
-  lastOrElse(fn: () => A): IO<A> {
+  lastOrElseL(fn: () => A): IO<A> {
     return IO.async((s, cb) => {
       this.unsafeSubscribeFn(new LastOrElseSubscriber(cb, fn, s));
     });
   }
 
-  lastOption(): IO<Option<A>> {
-    return this.map((e) => Some(e)).lastOrElse(() => None);
+  lastOptionL(): IO<Option<A>> {
+    return this.map((e) => Some(e)).lastOrElseL(() => None);
+  }
+
+  lastL(): IO<A> {
+    return this.lastOrElseL(() => {
+      throw new Error('last on empty observable');
+    })
+  }
+
+  foldLeftF<R>(seed: () => R, op: (r: R, a: A) => R): Observable<R> {
+    return new FoldLeftObservable(this, seed, op);
+  }
+
+  foldLeftL<R>(seed: () => R, op: (r: R, a: A) => R): IO<R> {
+    return this.foldLeftF(seed, op).firstL();
   }
 
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {

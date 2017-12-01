@@ -61,19 +61,25 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>;
 
-  first: () => IO<A>;
+  firstL: () => IO<A>;
 
-  firstOrElse: (fn: () => A) => IO<A>;
+  firstOrElseL: (fn: () => A) => IO<A>;
 
-  firstOption: () => IO<Option<A>>;
+  firstOptionL: () => IO<Option<A>>;
 
-  find: (p: (a: A) => boolean) => IO<Option<A>>;
+  findL: (p: (a: A) => boolean) => IO<Option<A>>;
 
-  exists: (p: (a: A) => boolean) => IO<boolean>;
+  existsL: (p: (a: A) => boolean) => IO<boolean>;
 
-  lastOrElse: (fn: () => A) => IO<A>;
+  lastOrElseL: (fn: () => A) => IO<A>;
 
-  lastOption: () => IO<Option<A>>;
+  lastOptionL: () => IO<Option<A>>;
+
+  lastL: () => IO<A>;
+
+  foldLeftF: <R>(seed: () => R, op: (r: R, a: A) => R) => ObservableInstance<R>;
+
+  foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>;
 
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }
