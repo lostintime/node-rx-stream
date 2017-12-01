@@ -113,10 +113,6 @@ export default abstract class OperatorsMixin<A> {
     return this.liftByOperator((out: Subscriber<Throwable>) => new FailedSubscriber(out));
   }
 
-  create(f: (s: Subscriber.Sync<A>) => Cancelable): Observable<A> {
-    throw new Error('not implemented');
-  }
-
   bufferWithPressure(size: number): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new BackPressuredBufferedSubscriber(size, out))
   }

@@ -55,8 +55,6 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   failed: () => ObservableInstance<Throwable>;
 
-  create: (f: (s: Subscriber.Sync<A>) => Cancelable) => ObservableInstance<A>;
-
   bufferWithPressure: (size: number) => ObservableInstance<A>;
 
   bufferTumbling: (count: number) => ObservableInstance<A[]>;

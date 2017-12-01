@@ -1,7 +1,7 @@
 import ObservableInstance from "../ObservableInstance";
 import {Subscriber} from "../../Reactive";
 import {Cancelable} from 'funfix';
-import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
+import SyncBufferedSubscriber from "../observers/buffers/SyncBufferedSubscriber";
 
 export default class CreateObservable<A> extends ObservableInstance<A> {
   constructor(private readonly _fn: (s: Subscriber.Sync<A>) => Cancelable) {
@@ -9,11 +9,10 @@ export default class CreateObservable<A> extends ObservableInstance<A> {
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable {
-    const out = new BackPressuredBufferedSubscriber(4, subscriber);
+    // TODO add OverflowStrategy support, select buffer depending on overflow strategy
+    const out = SyncBufferedSubscriber.unbounded(subscriber);
     try {
-      // FIXME implement Sync buffers
-      // return this._fn(out);
-      return Cancelable.empty();
+      return this._fn(out);
     } catch (e) {
       subscriber.scheduler.reportFailure(e);
       return Cancelable.empty();

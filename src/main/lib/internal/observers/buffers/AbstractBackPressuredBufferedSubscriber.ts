@@ -1,13 +1,6 @@
 import {Ack, AsyncAck, Continue, Stop, Subscriber, SyncAck} from "../../../Reactive";
 import {Scheduler, FutureMaker, id, Throwable} from 'funfix';
-
-function nextPowerOf2(nr: number): number {
-  if (nr < 0) {
-    throw new Error("nr must be positive");
-  }
-  const bit = Math.ceil(Math.log2(nr));
-  return 1 << (bit > 30 ? 30 : bit);
-}
+import {nextPowerOf2} from '../../math';
 
 export default abstract class AbstractBackPressuredBufferedSubscriber<A, R> implements Subscriber<A> {
   private readonly _bufferSize: number;

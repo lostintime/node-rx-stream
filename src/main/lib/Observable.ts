@@ -1,7 +1,7 @@
 import NowObservable from "./internal/builders/NowObservable";
 import ObservableInstance from "./internal/ObservableInstance";
 import RangeObservable from "./internal/builders/RangeObservable";
-import {Scheduler} from 'funfix';
+import {Scheduler, Cancelable} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
 import OperatorsMixin from "./internal/mixins/OperatorsMixin";
 import EmptyObservable from "./internal/builders/EmptyObservable";
@@ -10,6 +10,8 @@ import NeverObservable from "./internal/builders/NeverObservable";
 import EvalAlwaysObservable from "./internal/builders/EvalAlwaysObservable";
 import RepeatEvalObservable from "./internal/builders/RepeatEvalObservable";
 import EvalOnceObservable from "./internal/builders/EvalOnceObservable";
+import {Subscriber} from "./Reactive";
+import CreateObservable from "./internal/builders/CreateObservable";
 
 applyMixins(ObservableInstance, [OperatorsMixin]);
 
@@ -60,6 +62,10 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
 
   static repeatEval<A>(fn: () => A): Observable<A> {
     return new RepeatEvalObservable(fn);
+  }
+
+  static create<A>(fn: (s: Subscriber.Sync<A>) => Cancelable): Observable<A> {
+    return new CreateObservable(fn);
   }
 }
 

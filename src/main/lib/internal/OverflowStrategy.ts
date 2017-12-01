@@ -2,7 +2,7 @@ import {Option} from 'funfix';
 
 
 export namespace OverflowStrategy {
-  function require(expr: boolean, message: string): void {
+  function assert(expr: boolean, message: string): void {
     if (!expr) {
       throw new Error(message);
     }
@@ -21,7 +21,7 @@ export namespace OverflowStrategy {
       readonly isSynchronous: true = true;
 
       constructor(readonly bufferSize: number) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -31,7 +31,7 @@ export namespace OverflowStrategy {
       readonly isSynchronous: boolean = false;
 
       constructor(readonly bufferSize: number) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -41,7 +41,7 @@ export namespace OverflowStrategy {
       readonly isSynchronous: true = true;
 
       constructor(readonly bufferSize: number) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -52,7 +52,7 @@ export namespace OverflowStrategy {
 
       constructor(readonly bufferSize: number,
                   readonly onOverflow: (n: number) => Option<A>) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -62,7 +62,7 @@ export namespace OverflowStrategy {
       readonly isSynchronous = true;
 
       constructor(readonly bufferSize: number) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -73,7 +73,7 @@ export namespace OverflowStrategy {
 
       constructor(readonly bufferSize: number,
                   readonly onOverflow: (n: number) => Option<A>) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -83,7 +83,7 @@ export namespace OverflowStrategy {
       readonly isSynchronous = true;
 
       constructor(readonly bufferSize: number) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
 
@@ -94,7 +94,7 @@ export namespace OverflowStrategy {
 
       constructor(readonly bufferSize: number,
                   readonly onOverflow: (n: number) => Option<A>) {
-        require(bufferSize < 1, 'bufferSize should be strictly greater than 1');
+        assert(bufferSize < 1, 'bufferSize should be strictly greater than 1');
       }
     }
   }
