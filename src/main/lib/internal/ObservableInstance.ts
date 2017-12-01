@@ -67,5 +67,7 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   firstOption: () => IO<Option<A>>;
 
+  find: (p: (a: A) => boolean) => IO<Option<A>>;
+
   liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
 }

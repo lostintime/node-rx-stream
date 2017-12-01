@@ -142,6 +142,10 @@ export default abstract class OperatorsMixin<A> {
     return this.map((e) => Some(e)).firstOrElse(() => None);
   }
 
+  find(p: (a: A) => boolean): IO<Option<A>> {
+    return this.filter(p).firstOption();
+  }
+
   liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
     return new LiftByOperatorObservable(this, operator);
   }
