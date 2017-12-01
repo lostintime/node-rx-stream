@@ -1,7 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
-import {Scheduler, IBoolCancelable, BoolCancelable} from 'funfix';
+import {AsyncAck, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, Cancelable, IBoolCancelable, BoolCancelable} from 'funfix';
 
 
 export default class ArrayObservable<A>  extends ObservableInstance<A> {
@@ -15,7 +14,7 @@ export default class ArrayObservable<A>  extends ObservableInstance<A> {
     // const s = subscriber.scheduler;
     if (this._arr.length <= 0) {
       subscriber.onComplete();
-      return EmptyCancelable;
+      return Cancelable.empty();
     } else {
       const cancelable = BoolCancelable.empty();
 

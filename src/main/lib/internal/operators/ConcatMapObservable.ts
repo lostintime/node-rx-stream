@@ -1,10 +1,9 @@
 import ObservableInstance from "../ObservableInstance";
 import {
-  Ack, Cancelable, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure,
+  Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure,
   Throwable, AsyncAck
 } from "../../Reactive";
-import {Scheduler, Option, None, Some, FutureMaker} from 'funfix';
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Scheduler, Option, None, Some, FutureMaker, Cancelable} from 'funfix';
 
 
 export default class ConcatMapObservable<A, B> extends ObservableInstance<B> {
@@ -61,7 +60,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
   }
 
   private signalChildOnError(ex: Throwable): void {
-    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), EmptyCancelable));
+    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), Cancelable.empty()));
     switch (oldState.kind) {
       case 'WaitOnActiveChild':
         this._out.onError(ex);
@@ -256,7 +255,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
         childRef = this._state.ref;
         break;
       default:
-        childRef = EmptyCancelable;
+        childRef = Cancelable.empty();
     }
 
     const oldState = this.stateSetAndGet(FlatMapState.WaitComplete(ex, childRef));

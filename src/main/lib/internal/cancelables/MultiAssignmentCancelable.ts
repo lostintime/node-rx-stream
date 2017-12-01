@@ -1,13 +1,11 @@
 import {AssignableCancelable} from "./AssignableCancelable";
-import {Cancelable} from "../../Reactive";
-import EmptyCancelable from "./EmptyCancelable";
-
+import {Cancelable} from 'funfix';
 
 export default class MultiAssignmentCancelable implements AssignableCancelable.Multi {
   private _state: State;
 
   constructor(initial: Cancelable | null = null) {
-    this._state = State.Active(initial || EmptyCancelable, 0);
+    this._state = State.Active(initial || Cancelable.empty(), 0);
   }
 
   isCanceled(): boolean {

@@ -1,7 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Ack, Cancelable, Stop, Subscriber, Throwable} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
-import {Scheduler} from 'funfix';
+import {Ack, Stop, Subscriber, Throwable} from "../../Reactive";
+import {Scheduler, Cancelable} from 'funfix';
 
 
 class ScanSubscriber<A, R> implements Subscriber<A> {
@@ -62,7 +61,7 @@ export default class ScanObservable<A, R> extends ObservableInstance<R> {
         out.onError(e);
       }
 
-      return EmptyCancelable;
+      return Cancelable.empty();
     }
   }
 }

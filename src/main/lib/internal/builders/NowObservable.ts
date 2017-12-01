@@ -1,6 +1,6 @@
-import {Cancelable, Subscriber} from "../../Reactive";
+import {Subscriber} from "../../Reactive";
 import ObservableInstance from "../ObservableInstance";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Cancelable} from "funfix";
 
 /**
  * https://github.com/monix/monix/blob/master/monix-reactive/shared/src/main/scala/monix/reactive/internal/builders/NowObservable.scala
@@ -15,6 +15,6 @@ export default class NowObservable<T> extends ObservableInstance<T> {
     subscriber.onNext(this._value);
     subscriber.onComplete();
 
-    return EmptyCancelable;
+    return Cancelable.empty();
   }
 }

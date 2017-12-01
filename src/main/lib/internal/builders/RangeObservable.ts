@@ -1,7 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
-import {Scheduler, IBoolCancelable, BoolCancelable} from 'funfix';
+import {AsyncAck, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, IBoolCancelable, BoolCancelable, Cancelable} from 'funfix';
 
 
 export default class RangeObservable extends ObservableInstance<number> {
@@ -19,7 +18,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     // const s = subscriber.scheduler;
     if (!RangeObservable.isInRange(this._from, this._until, this._step)) {
       subscriber.onComplete();
-      return EmptyCancelable;
+      return Cancelable.empty();
     } else {
       const cancelable = BoolCancelable.empty();
 

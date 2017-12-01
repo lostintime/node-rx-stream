@@ -1,6 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Subscriber} from "../../Reactive";
+import {Cancelable} from "funfix";
 
 export default class EvalAlwaysObservable<A> extends ObservableInstance<A> {
   constructor(private readonly _fn: () => A) {
@@ -22,6 +22,6 @@ export default class EvalAlwaysObservable<A> extends ObservableInstance<A> {
       }
     }
 
-    return EmptyCancelable;
+    return Cancelable.empty();
   }
 }

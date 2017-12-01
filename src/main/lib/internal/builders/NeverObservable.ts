@@ -1,10 +1,10 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Subscriber} from "../../Reactive";
+import {Cancelable} from "funfix";
 
 class NeverObservableImpl extends ObservableInstance<never> {
   unsafeSubscribeFn(subscriber: Subscriber<never>): Cancelable {
-    return EmptyCancelable;
+    return Cancelable.empty();
   }
 }
 

@@ -1,7 +1,6 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Subscriber, Throwable} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
-
+import {Subscriber, Throwable} from "../../Reactive";
+import {Cancelable} from "funfix";
 
 export default class EvalOnceObservable<A> extends ObservableInstance<A> {
   private _result: A;
@@ -42,6 +41,6 @@ export default class EvalOnceObservable<A> extends ObservableInstance<A> {
 
     this.signalResult(subscriber, this._result, this._errorThrown);
 
-    return EmptyCancelable;
+    return Cancelable.empty();
   }
 }

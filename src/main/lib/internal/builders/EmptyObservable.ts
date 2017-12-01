@@ -1,11 +1,11 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Subscriber} from "../../Reactive";
+import {Cancelable} from 'funfix';
 
 export default class EmptyObservable<A>  extends ObservableInstance<A> {
   unsafeSubscribeFn(subscriber: Subscriber<A>): Cancelable {
     subscriber.onComplete();
 
-    return EmptyCancelable;
+    return Cancelable.empty();
   }
 }
