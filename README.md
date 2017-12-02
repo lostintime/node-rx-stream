@@ -142,7 +142,7 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `tail: Observable[A] = drop(1)`
   * [x] `drop(n: Int): Observable[A]`
   * [ ] `takeByTimespan(timespan: FiniteDuration): Observable[A]`
-  * [ ] `takeEveryNth(n: Int): Observable[A]`
+  * [x] `takeEveryNth(n: Int): Observable[A]`
   * [x] `takeUntil(trigger: Observable[Any]): Observable[A]`
   * [x] `takeWhile(p: A => Boolean): Observable[A]`
   * [ ] `takeWhileNotCanceled(c: BooleanCancelable): Observable[A]`
@@ -186,10 +186,10 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [x] `countL: Task[Long]`
   * [x] `countF: Observable[Long]`
   * [x] `findL(p: A => Boolean): Task[Option[A]]`
-  * [ ] `foldL[AA >: A](implicit A: Monoid[AA]): Task[AA]`
-  * [ ] `foldF[AA >: A](implicit A: Monoid[AA]): Observable[AA]`
-  * [ ] `foldWhileLeftL[S](seed: => S)(op: (S, A) => Either[S, S]): Task[S]`
-  * [ ] `foldWhileLeftF[S](seed: => S)(op: (S, A) => Either[S, S]): Observable[S]`
+  * [-] `foldL[AA >: A](implicit A: Monoid[AA]): Task[AA]`
+  * [-] `foldF[AA >: A](implicit A: Monoid[AA]): Observable[AA]`
+  * [-] `foldWhileLeftL[S](seed: => S)(op: (S, A) => Either[S, S]): Task[S]`
+  * [-] `foldWhileLeftF[S](seed: => S)(op: (S, A) => Either[S, S]): Observable[S]`
   * [x] `headL: Task[A] = firstL`
   * [x] `firstL: Task[A]`
   * [x] `firstOrElseL[B >: A](default: => B): Task[B]`

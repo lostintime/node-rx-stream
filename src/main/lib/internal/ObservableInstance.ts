@@ -83,6 +83,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   existsL: (p: (a: A) => boolean) => IO<boolean>;
 
+  forAll: (p: (a: A) => boolean) => IO<boolean>;
+
   lastOrElseL: (fn: () => A) => IO<A>;
 
   lastOptionL: () => IO<Option<A>>;

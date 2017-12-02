@@ -185,6 +185,10 @@ export default abstract class OperatorsMixin<A> {
     return this.findL(p).map(o => o.nonEmpty());
   }
 
+  forAll(p: (a: A) => boolean): IO<boolean> {
+    return this.existsL(e => !p(e)).map(r => !r);
+  }
+
   lastOrElseL(fn: () => A): IO<A> {
     return IO.async((s, cb) => {
       this.unsafeSubscribeFn(new LastOrElseSubscriber(cb, fn, s));
