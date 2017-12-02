@@ -120,4 +120,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   onErrorRestartUnlimited: () => ObservableInstance<A>;
 
   onErrorRestartIf: (p: (e: Throwable) => boolean) => ObservableInstance<A>;
+
+  foreachL: (onNext: (a: A) => void) => IO<any>;
+
+  foreach:(onNext: (a: A) => void) => Future<any>;
 }

@@ -33,32 +33,26 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
 
 let failsCnt  = 0;
 
-items
-  .map((n): number => {
-    // will throw here
-    if (n == 30) {
-      failsCnt += 1;
-      throw new Error('something went wrong');
-    }
-
-    return n;
-  })
+const c = items
+  // .map((n): number => {
+  //   // will throw here
+  //   if (n == 30) {
+  //     failsCnt += 1;
+  //     throw new Error('something went wrong');
+  //   }
+  //
+  //   return n;
+  // })
   .onErrorRestartIf(() => failsCnt < 3)
   .bufferWithPressure(10)
   .takeUntil(sigTrigger)
-  .take(0)
-  // .defaultIfEmpty(() => -1)
-  .isEmptyF()
-  .subscribe(
-    (t) => {
-      console.log(`debug.onNext(${t})`);
-      return Continue;
-    },
-    (e) => {
-      console.log('debug.onError', e);
-    },
-    () => {
-      console.log('debug.onComplete');
-    }
-  );
+  // .take(10)
+  .foreachL((item) => {
+    console.log('got item', item);
+  })
+  .run();
 
+
+setTimeout(() => {
+  c.cancel();
+}, 10000);

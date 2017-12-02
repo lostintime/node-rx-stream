@@ -11,7 +11,7 @@ import DropByPredicateSubscriber from "../operators/DropByPredicateSubscriber";
 import FailedSubscriber from "../operators/FailedSubscriber";
 import TakeLastSubscriber from "../operators/TakeLastSubscriber";
 import BackPressuredBufferedSubscriber from "../observers/buffers/BackPressuredBufferedSubscriber";
-import {Scheduler, IO, Future, Cancelable, Throwable, Option, Some, None} from 'funfix';
+import {Scheduler, IO, Future, Cancelable, Throwable, Option, Some, None, FutureMaker, Success, Failure} from 'funfix';
 import BufferSlidingSubscriber from "../operators/BufferSlidingSubscriber";
 import MapIOObservable from "../operators/MapIOObservable";
 import ScanObservable from "../operators/ScanObservable";
@@ -28,6 +28,7 @@ import CountSubscriber from "../operators/CountSubscriber";
 import DefaultIfEmptySubscriber from "../operators/DefaultIfEmptySubscriber";
 import TakeEveryNthSubscriber from "../operators/TakeEveryNthSubscriber";
 import IsEmptySubscriber from "../operators/IsEmptySubscriber";
+import ForeachSubscriber from "../subscribers/ForeachSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -268,5 +269,25 @@ export default abstract class OperatorsMixin<A> {
 
   onErrorRestartIf(p: (e: Throwable) => boolean): Observable<A> {
     return new OnErrorRetryIfObservable(this, p);
+  }
+
+  foreachL(onNext: (a: A) => void): IO<any> {
+    return IO.deferFutureAction((s) => this.foreach(onNext, s));
+  }
+
+  foreach(onNext: (a: A) => void, scheduler?: Scheduler): Future<any> {
+    const m = FutureMaker.empty<any>();
+
+    const onSuccess = () => {
+      m.success(null);
+    };
+
+    const onFailure = (e: Throwable) => {
+      m.failure(e);
+    };
+
+    const c = this.unsafeSubscribeFn(new ForeachSubscriber(onNext, onSuccess, onFailure, scheduler || Scheduler.global.get()));
+
+    return m.future(c);
   }
 }
