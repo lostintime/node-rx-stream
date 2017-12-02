@@ -1,7 +1,7 @@
 {
   "name": "rx-stream",
   "author": "lostintime <lostintime.dev@gmail.com>",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "description": "Reactive streams with TypeScript, Monix scala library port",
   "main": "dist/index.js",
