@@ -97,4 +97,6 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   onErrorHandle: (f: (e: Throwable) => A) => ObservableInstance<A>;
 
   onErrorFallbackTo: (that: ObservableInstance<A>) => ObservableInstance<A>;
+
+  onErrorRestart: (maxRetries: number) => ObservableInstance<A>
 }

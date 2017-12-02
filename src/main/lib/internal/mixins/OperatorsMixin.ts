@@ -22,6 +22,7 @@ import LastOrElseSubscriber from "../operators/LastOrElseSubscriber";
 import FoldLeftObservable from "../operators/FoldLeftObservable";
 import ObservableInstance from "../ObservableInstance";
 import OnErrorRecoverWithObservable from "../operators/OnErrorRecoverWithObservable";
+import OnErrorRetryCountedObservable from "../operators/OnErrorRetryCountedObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -210,5 +211,13 @@ export default abstract class OperatorsMixin<A> {
 
   onErrorFallbackTo(that: Observable<A>): Observable<A> {
     return this.onErrorHandleWith(() => that);
+  }
+
+  onErrorRestart(maxRetries: number): Observable<A> {
+    if (maxRetries <= 0) {
+      throw new Error('maxRetries should be positive');
+    }
+
+    return new OnErrorRetryCountedObservable(this, maxRetries);
   }
 }

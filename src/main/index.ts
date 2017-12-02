@@ -42,7 +42,7 @@ items
 
     return n;
   })
-  .onErrorFallbackTo(items)
+  .onErrorRestart(1)
   .takeUntil(sigTrigger)
   .subscribe(
     (t) => {
