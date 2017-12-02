@@ -33,7 +33,7 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
 
 let failsCnt  = 0;
 
-const c = Observable.fromTask(IO.pure(10).delayResult(3000))
+const c = Observable.fromFuture(() => Future.pure(13).delayResult(1000))
   .foreachL((item) => {
     console.log('got item', item);
   })

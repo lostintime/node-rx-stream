@@ -1,7 +1,7 @@
 import NowObservable from "./internal/builders/NowObservable";
 import ObservableInstance from "./internal/ObservableInstance";
 import RangeObservable from "./internal/builders/RangeObservable";
-import {Scheduler, Cancelable, IO} from 'funfix';
+import {Scheduler, Cancelable, IO, Future, Eval} from 'funfix';
 import LoopObservable from "./internal/builders/LoopObservable";
 import OperatorsMixin from "./internal/mixins/OperatorsMixin";
 import EmptyObservable from "./internal/builders/EmptyObservable";
@@ -71,6 +71,14 @@ export default abstract class Observable<T> extends ObservableInstance<T> {
 
   static fromTask<A>(task: IO<A>): Observable<A> {
     return new TaskAsObservable(task);
+  }
+
+  static fromFuture<A>(factory: () => Future<A>): Observable<A> {
+    return Observable.fromTask(IO.deferFuture(factory));
+  }
+
+  static fromEval<A>(value: Eval<A>): Observable<A> {
+    return Observable.eval(() => value.get());
   }
 }
 

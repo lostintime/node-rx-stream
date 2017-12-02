@@ -253,11 +253,11 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `fromReactivePublisher[A](publisher: RPublisher[A]): Observable[A]` 
   * [ ] `fromReactivePublisher[A](publisher: RPublisher[A], requestCount: Int): Observable[A]` 
   * [ ] `coeval[A](value: Coeval[A]): Observable[A]` 
-  * [ ] `fromEval[A](fa: Eval[A]): Observable[A]` 
-  * [ ] `fromFuture[A](factory: => Future[A]): Observable[A]` 
+  * [x] `fromEval[A](fa: Eval[A]): Observable[A]` 
+  * [x] `fromFuture[A](factory: => Future[A]): Observable[A]` 
   * [-] `fromEffect[F[_], A](fa: F[A])(implicit F: Effect[F]): Observable[A]` 
-  * [ ] `fromIO[A](fa: IO[A]): Observable[A]` 
-  * [ ] `fromTask[A](task: Task[A]): Observable[A]` 
+  * [-] `fromIO[A](fa: IO[A]): Observable[A]` 
+  * [x] `fromTask[A](task: Task[A]): Observable[A]` 
   * [ ] `suspend[A](fa: => Observable[A]): Observable[A]` 
   * [ ] `defer[A](fa: => Observable[A]): Observable[A]` 
   * [ ] `cons[A](head: A, tail: Observable[A]): Observable[A]` 
