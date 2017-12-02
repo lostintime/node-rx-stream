@@ -3,6 +3,7 @@ import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
 import {Scheduler, IO, Future, Cancelable, Throwable, Option} from "funfix";
 import SubscriberWrap from "./observers/SubscriberWrap";
+import Observable from "../Observable";
 
 
 export default abstract class ObservableInstance<A> implements OperatorsMixin<A> {
@@ -21,7 +22,7 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
 
-  mapIO: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>;
+  mapTask: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>;
 
   mapFuture: <B>(fn: (a: A) => Future<B>) => ObservableInstance<B>;
 
@@ -65,9 +66,17 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   firstOrElseL: (fn: () => A) => IO<A>;
 
+  firstOrElseF: (fn: () => A) => ObservableInstance<A>;
+
+  headOrElseF: (fn: () => A) => ObservableInstance<A>;
+
   firstOptionL: () => IO<Option<A>>;
 
+  headF: () => ObservableInstance<A>;
+
   findL: (p: (a: A) => boolean) => IO<Option<A>>;
+
+  findF: (p: (a: A) => boolean) => ObservableInstance<A>;
 
   existsL: (p: (a: A) => boolean) => IO<boolean>;
 

@@ -20,6 +20,7 @@ import TakeUntilObservable from "../operators/TakeUntilObservable";
 import FirstOrElseSubscriber from "../operators/FirstOrElseSubscriber";
 import LastOrElseSubscriber from "../operators/LastOrElseSubscriber";
 import FoldLeftObservable from "../operators/FoldLeftObservable";
+import ObservableInstance from "../ObservableInstance";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -36,7 +37,7 @@ export default abstract class OperatorsMixin<A> {
     return this.liftByOperator((out: Subscriber<B>) => new MapSubscriber(fn, out))
   }
 
-  mapIO<B>(fn: (a: A) => IO<B>): Observable<B> {
+  mapTask<B>(fn: (a: A) => IO<B>): Observable<B> {
     return new MapIOObservable(this, fn);
   }
 
@@ -128,10 +129,24 @@ export default abstract class OperatorsMixin<A> {
     return this.liftByOperator((out: Subscriber<A[]>) => new BufferSlidingSubscriber(count, skip, out))
   }
 
+  headF(): Observable<A> {
+    return this.take(1);
+  }
+
   firstL(): IO<A> {
     return this.firstOrElseL(() => {
       throw new Error('first on empty observable');
     });
+  }
+
+  firstOrElseF(fn: () => A): Observable<A> {
+    return this.headOrElseF(fn);
+  }
+
+  headOrElseF(fn: () => A): Observable<A> {
+    return this.headF()
+      .foldLeftF(() => Option.empty<A>(), (_, elem) => Some(elem))
+      .map(elemOpt => elemOpt.getOrElseL(fn))
   }
 
   firstOrElseL(fn: () => A): IO<A> {
@@ -146,6 +161,10 @@ export default abstract class OperatorsMixin<A> {
 
   findL(p: (a: A) => boolean): IO<Option<A>> {
     return this.filter(p).firstOptionL();
+  }
+
+  findF(p: (a: A) => boolean): ObservableInstance<A> {
+    return this.filter(p).headF();
   }
 
   existsL(p: (a: A) => boolean): IO<boolean> {

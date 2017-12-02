@@ -80,8 +80,8 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `++[B >: A](other: Observable[B]): Observable[B]` (concat)
   * [ ] `endWithError(error: Throwable): Observable[A]`
   * [x] `failed: Observable[Throwable]`
-  * [ ] `firstOrElseF[B >: A](default: => B): Observable[B]`
-  * [ ] `headOrElseF[B >: A](default: => B): Observable[B]`
+  * [x] `firstOrElseF[B >: A](default: => B): Observable[B]`
+  * [x] `headOrElseF[B >: A](default: => B): Observable[B]`
   * [x] `map[B](f: A => B): Observable[B]`
   * [x] `flatMap[B](f: A => Observable[B]): Observable[B]`
   * [x] `concatMap[B](f: A => Observable[B]): Observable[B]`
@@ -195,9 +195,9 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [x] `firstOrElseL[B >: A](default: => B): Task[B]`
   * [ ] `forAllL(p: A => Boolean): Task[Boolean]`
   * [x] `existsL(p: A => Boolean): Task[Boolean]`
-  * [ ] `findF(p: A => Boolean): Observable[A]`
+  * [x] `findF(p: A => Boolean): Observable[A]`
   * [x] `filter(p: A => Boolean): Observable[A]`
-  * [ ] `headF: Observable[A] = take(1)`
+  * [x] `headF: Observable[A] = take(1)`
   * [x] `take(n: Long): Observable[A]`
   * [x] `foldLeftL[R](seed: => R)(op: (R, A) => R): Task[R]`
   * [x] `foldLeftF[R](seed: => R)(op: (R, A) => R): Observable[R]`
