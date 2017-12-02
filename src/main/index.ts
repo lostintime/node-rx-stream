@@ -33,26 +33,13 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
 
 let failsCnt  = 0;
 
-const c = items
-  // .map((n): number => {
-  //   // will throw here
-  //   if (n == 30) {
-  //     failsCnt += 1;
-  //     throw new Error('something went wrong');
-  //   }
-  //
-  //   return n;
-  // })
-  .onErrorRestartIf(() => failsCnt < 3)
-  .bufferWithPressure(10)
-  .takeUntil(sigTrigger)
-  // .take(10)
+const c = Observable.fromTask(IO.pure(10).delayResult(3000))
   .foreachL((item) => {
     console.log('got item', item);
   })
   .run();
 
 
-setTimeout(() => {
-  c.cancel();
-}, 10000);
+// setTimeout(() => {
+//   c.cancel();
+// }, 1000);

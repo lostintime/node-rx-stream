@@ -221,8 +221,8 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `sumL[B >: A](implicit B: Numeric[B]): Task[B]`
   * [ ] `sumF[AA >: A](implicit A: Numeric[AA]): Observable[AA]`
   * [ ] `toListL: Task[List[A]]`
-  * [ ] `foreachL(cb: A => Unit): Task[Unit]`
-  * [ ] `foreach(cb: A => Unit)(implicit s: Scheduler): CancelableFuture[Unit]`
+  * [x] `foreachL(cb: A => Unit): Task[Unit]`
+  * [x] `foreach(cb: A => Unit)(implicit s: Scheduler): CancelableFuture[Unit]`
   
   
 `Observable` builders
