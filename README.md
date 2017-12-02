@@ -268,7 +268,7 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `intervalAtFixedRate(period: FiniteDuration): Observable[Long]` 
   * [ ] `intervalAtFixedRate(initialDelay: FiniteDuration, period: FiniteDuration): Observable[Long]` 
   * [ ] `repeat[A](elems: A*): Observable[A]` 
-  * [ ] `repeatEval[A](task: => A): Observable[A]` 
+  * [x] `repeatEval[A](task: => A): Observable[A]` 
   * [x] `range(from: Long, until: Long, step: Long = 1L): Observable[Long]` 
   * [ ] `fromStateAction[S, A](f: S => (A, S))(seed: => S): Observable[A]` 
   * [ ] `fromAsyncStateAction[S, A](f: S => Task[(A, S)])(seed: => S): Observable[A]` 
