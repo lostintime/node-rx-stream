@@ -170,6 +170,10 @@ export default abstract class OperatorsMixin<A> {
     })
   }
 
+  headOptionL(): IO<Option<A>> {
+    return this.firstOptionL();
+  }
+
   firstOptionL(): IO<Option<A>> {
     return this.map((e) => Some(e)).firstOrElseL(() => None);
   }

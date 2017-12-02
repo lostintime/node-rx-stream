@@ -208,8 +208,8 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `completedL: Task[Unit]`
   * [ ] `maxL[AA >: A](implicit A: Order[AA]): Task[Option[AA]]`
   * [ ] `maxF[AA >: A](implicit A: Order[AA]): Observable[AA]`
-  * [-] `headOptionL: Task[Option[A]] = firstOptionL`
-  * [ ] `firstOptionL: Task[Option[A]]`
+  * [x] `headOptionL: Task[Option[A]] = firstOptionL`
+  * [x] `firstOptionL: Task[Option[A]]`
   * [ ] `maxByL[K](key: A => K)(implicit K: Order[K]): Task[Option[A]]`
   * [ ] `maxByF[K](key: A => K)(implicit K: Order[K]): Observable[A]`
   * [ ] `minL[AA >: A](implicit A: Order[AA]): Task[Option[AA]]`

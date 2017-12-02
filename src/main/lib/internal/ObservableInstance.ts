@@ -73,6 +73,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   headOrElseF: (fn: () => A) => ObservableInstance<A>;
 
+  headOptionL: () => IO<Option<A>>;
+
   firstOptionL: () => IO<Option<A>>;
 
   headF: () => ObservableInstance<A>;
