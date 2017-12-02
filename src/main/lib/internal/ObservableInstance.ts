@@ -3,7 +3,6 @@ import SafeSubscriber from "./builders/SafeSubscriber";
 import OperatorsMixin from "./mixins/OperatorsMixin";
 import {Scheduler, IO, Future, Cancelable, Throwable, Option} from "funfix";
 import SubscriberWrap from "./observers/SubscriberWrap";
-import Observable from "../Observable";
 
 
 export default abstract class ObservableInstance<A> implements OperatorsMixin<A> {
@@ -98,7 +97,9 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>;
 
-  defaultIfEmpty: (f: () => A) => Observable<A>;
+  defaultIfEmpty: (f: () => A) => ObservableInstance<A>;
+
+  takeEveryNth: (n: number) => ObservableInstance<A>;
 
   onErrorHandleWith: (f: (e: Throwable) => ObservableInstance<A>) => ObservableInstance<A>;
 

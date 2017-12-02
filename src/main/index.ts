@@ -47,6 +47,7 @@ items
   .onErrorRestartIf(() => failsCnt < 3)
   .bufferWithPressure(10)
   .takeUntil(sigTrigger)
+  .takeEveryNth(5)
   .defaultIfEmpty(() => -1)
   .subscribe(
     (t) => {

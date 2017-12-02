@@ -26,6 +26,7 @@ import OnErrorRetryCountedObservable from "../operators/OnErrorRetryCountedObser
 import OnErrorRetryIfObservable from "../operators/OnErrorRetryIfObservable";
 import CountSubscriber from "../operators/CountSubscriber";
 import DefaultIfEmptySubscriber from "../operators/DefaultIfEmptySubscriber";
+import TakeEveryNthSubscriber from "../operators/TakeEveryNthSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -218,6 +219,10 @@ export default abstract class OperatorsMixin<A> {
 
   defaultIfEmpty(f: () => A): Observable<A> {
     return this.liftByOperator((out: Subscriber<A>) => new DefaultIfEmptySubscriber(out, f));
+  }
+
+  takeEveryNth(n: number): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new TakeEveryNthSubscriber(out, n));
   }
 
   onErrorHandleWith(f: (e: Throwable) => Observable<A>): Observable<A> {

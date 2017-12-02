@@ -34,7 +34,7 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `delaySubscription(timespan: FiniteDuration): Observable[A]`
   * [ ] `switchMap[B](f: A => Observable[B]): Observable[B]`
   * [ ] `debounceRepeated(period: FiniteDuration): Observable[A]`
-  * [ ] `defaultIfEmpty[B >: A](default: => B): Observable[B]`
+  * [x] `defaultIfEmpty[B >: A](default: => B): Observable[B]`
   * [ ] `delayOnComplete(delay: FiniteDuration): Observable[A]`
   * [ ] `delayOnNext(duration: FiniteDuration): Observable[A]`
   * [ ] `delayOnNextBySelector[B](selector: A => Observable[B]): Observable[A]`
