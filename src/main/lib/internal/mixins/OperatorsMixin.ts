@@ -25,6 +25,7 @@ import OnErrorRecoverWithObservable from "../operators/OnErrorRecoverWithObserva
 import OnErrorRetryCountedObservable from "../operators/OnErrorRetryCountedObservable";
 import OnErrorRetryIfObservable from "../operators/OnErrorRetryIfObservable";
 import CountSubscriber from "../operators/CountSubscriber";
+import DefaultIfEmptySubscriber from "../operators/DefaultIfEmptySubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -213,6 +214,10 @@ export default abstract class OperatorsMixin<A> {
 
   foldLeftL<R>(seed: () => R, op: (r: R, a: A) => R): IO<R> {
     return this.foldLeftF(seed, op).firstL();
+  }
+
+  defaultIfEmpty(f: () => A): Observable<A> {
+    return this.liftByOperator((out: Subscriber<A>) => new DefaultIfEmptySubscriber(out, f));
   }
 
   onErrorHandleWith(f: (e: Throwable) => Observable<A>): Observable<A> {

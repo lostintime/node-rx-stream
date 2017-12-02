@@ -98,6 +98,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>;
 
+  defaultIfEmpty: (f: () => A) => Observable<A>;
+
   onErrorHandleWith: (f: (e: Throwable) => ObservableInstance<A>) => ObservableInstance<A>;
 
   onErrorHandle: (f: (e: Throwable) => A) => ObservableInstance<A>;

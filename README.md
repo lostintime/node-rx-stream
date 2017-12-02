@@ -7,8 +7,8 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
 
 ## TODO
 
-  * [x] implemented
   * [ ] pending
+  * [x] implemented
   * [-] won't do
 
 `Observable` transformations

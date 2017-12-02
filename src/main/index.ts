@@ -47,6 +47,7 @@ items
   .onErrorRestartIf(() => failsCnt < 3)
   .bufferWithPressure(10)
   .takeUntil(sigTrigger)
+  .defaultIfEmpty(() => -1)
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);
