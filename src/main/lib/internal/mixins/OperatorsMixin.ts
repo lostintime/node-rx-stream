@@ -207,4 +207,8 @@ export default abstract class OperatorsMixin<A> {
   onErrorHandle(f: (e: Throwable) => A): Observable<A> {
     return this.onErrorHandleWith((e) => Observable.now(f(e)));
   }
+
+  onErrorFallbackTo(that: Observable<A>): Observable<A> {
+    return this.onErrorHandleWith(() => that);
+  }
 }

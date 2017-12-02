@@ -42,11 +42,7 @@ items
 
     return n;
   })
-  .onErrorHandle((e) => {
-    console.log('recover error', e);
-
-    return -1;
-  })
+  .onErrorFallbackTo(items)
   .takeUntil(sigTrigger)
   .subscribe(
     (t) => {
