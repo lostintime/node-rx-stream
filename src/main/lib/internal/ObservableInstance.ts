@@ -20,6 +20,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
     return this.subscribeWith(new SubscriberWrap(nextFn, errorFn, completeFn, scheduler));
   }
 
+  liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
+
   map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
 
   mapTask: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>;
@@ -90,5 +92,5 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>;
 
-  liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
+  onErrorHandleWith: (f: (e: Throwable) => ObservableInstance<A>) => ObservableInstance<A>;
 }

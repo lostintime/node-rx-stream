@@ -33,25 +33,31 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
 });
 
 
-// items
-//   .scanTask(() => IO.pure(0), (s, a) => IO.pure(s + a).delayResult(1000))
-//   .takeUntil(sigTrigger)
-//   .subscribe(
-//     (t) => {
-//       console.log(`debug.onNext(${t})`);
-//       return Continue;
-//     },
-//     (e) => {
-//       console.log('debug.onError', e);
-//     },
-//     () => {
-//       console.log('debug.onComplete');
-//     }
-//   );
-
 items
-  .foldLeftL(() => 0, (s, v) => s+v)
-  .forEach((e) => {
-    console.log('aici', e);
+  .map((n): number => {
+    // will throw here
+    if (n == 3 || n ==7) {
+      throw new Error('something went wrong');
+    }
+
+    return n;
   })
-  .run();
+  .onErrorHandleWith((e) => {
+    console.log('recover error', e);
+
+    return items;
+  })
+  .takeUntil(sigTrigger)
+  .subscribe(
+    (t) => {
+      console.log(`debug.onNext(${t})`);
+      return Continue;
+    },
+    (e) => {
+      console.log('debug.onError', e);
+    },
+    () => {
+      console.log('debug.onComplete');
+    }
+  );
+

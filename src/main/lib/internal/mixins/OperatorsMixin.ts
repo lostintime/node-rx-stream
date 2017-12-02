@@ -21,6 +21,7 @@ import FirstOrElseSubscriber from "../operators/FirstOrElseSubscriber";
 import LastOrElseSubscriber from "../operators/LastOrElseSubscriber";
 import FoldLeftObservable from "../operators/FoldLeftObservable";
 import ObservableInstance from "../ObservableInstance";
+import OnErrorRecoverWithObservable from "../operators/OnErrorRecoverWithObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -32,6 +33,10 @@ export default abstract class OperatorsMixin<A> {
                      errorFn?: (e: Throwable) => void,
                      completeFn?: () => void,
                      scheduler?: Scheduler): Cancelable;
+
+  liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
+    return new LiftByOperatorObservable(this, operator);
+  }
 
   map<B>(fn: (a: A) => B): Observable<B> {
     return this.liftByOperator((out: Subscriber<B>) => new MapSubscriber(fn, out))
@@ -195,7 +200,7 @@ export default abstract class OperatorsMixin<A> {
     return this.foldLeftF(seed, op).firstL();
   }
 
-  liftByOperator<B>(operator: Operator<A, B>): Observable<B> {
-    return new LiftByOperatorObservable(this, operator);
+  onErrorHandleWith(f: (e: Throwable) => Observable<A>): Observable<A> {
+    return new OnErrorRecoverWithObservable(this, f);
   }
 }
