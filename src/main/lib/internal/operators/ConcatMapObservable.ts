@@ -1,33 +1,48 @@
-import ObservableInstance from "../ObservableInstance";
-import {Ack, Continue, Stop, Subscriber, SyncAck, AsyncAck} from "../../Reactive";
-import {Scheduler, Option, None, Some, FutureMaker, Cancelable, Throwable} from 'funfix';
-
+/*
+ * Copyright (c) 2017 by The RxStream Project Developers.
+ * Some rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import ObservableInstance from "../ObservableInstance"
+import { Ack, Continue, Stop, Subscriber, SyncAck, AsyncAck } from "../../Reactive"
+import { Scheduler, Option, None, Some, FutureMaker, Cancelable, Throwable } from "funfix"
 
 export default class ConcatMapObservable<A, B> extends ObservableInstance<B> {
   constructor(private readonly _source: ObservableInstance<A>,
               private readonly _fn: (a: A) => ObservableInstance<B>,
               private readonly _delayErrors: boolean) {
-    super();
+    super()
   }
 
   unsafeSubscribeFn(out: Subscriber<B>): Cancelable {
-    const subscriber = new ConcatMapSubscriber(out, this._fn, this._delayErrors);
-    const mainSubscription = this._source.unsafeSubscribeFn(subscriber);
+    const subscriber = new ConcatMapSubscriber(out, this._fn, this._delayErrors)
+    const mainSubscription = this._source.unsafeSubscribeFn(subscriber)
 
     return {
       cancel: () => {
         try {
           mainSubscription.cancel()
         } finally {
-          subscriber.cancel();
+          subscriber.cancel()
         }
       }
-    };
+    }
   }
 }
 
 class ChildSubscriber<B> implements Subscriber<B> {
-  private _ack: Ack = Continue;
+  private _ack: Ack = Continue
 
   constructor(private readonly _out: Subscriber<B>,
               private readonly _errors: Throwable[],
@@ -39,73 +54,74 @@ class ChildSubscriber<B> implements Subscriber<B> {
   }
 
   onNext(elem: B): Ack {
-    this._ack = this._out.onNext(elem);
-    return Ack.syncOnStopOrFailure(this._ack, () => this.signalChildOnComplete(this._ack, true));
+    this._ack = this._out.onNext(elem)
+    return Ack.syncOnStopOrFailure(this._ack, () => this.signalChildOnComplete(this._ack, true))
   }
 
   onComplete(): void {
-    this.signalChildOnComplete(this._ack, false);
+    this.signalChildOnComplete(this._ack, false)
   }
 
   onError(e: Throwable): void {
     if (!this._delayErrors) {
-      this.signalChildOnError(e);
+      this.signalChildOnError(e)
     } else {
-      this._errors.push(e);
-      this.onComplete();
+      this._errors.push(e)
+      this.onComplete()
     }
   }
 
   private signalChildOnError(ex: Throwable): void {
-    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), Cancelable.empty()));
+    const oldState = this._stateGetAndSet(FlatMapState.WaitComplete(Some(ex), Cancelable.empty()))
+
     switch (oldState.kind) {
-      case 'WaitOnActiveChild':
-        this._out.onError(ex);
-        this._asyncUpstreamAck.trySuccess(Stop);
-        break;
-      case 'WaitOnNextChild':
-        this._out.onError(ex);
-        this._asyncUpstreamAck.trySuccess(Stop);
-        break;
-      case 'Active':
-        this._out.onError(ex);
-        this._asyncUpstreamAck.trySuccess(Stop);
-        break;
-      case 'WaitComplete':
+      case "WaitOnActiveChild":
+        this._out.onError(ex)
+        this._asyncUpstreamAck.trySuccess(Stop)
+        break
+      case "WaitOnNextChild":
+        this._out.onError(ex)
+        this._asyncUpstreamAck.trySuccess(Stop)
+        break
+      case "Active":
+        this._out.onError(ex)
+        this._asyncUpstreamAck.trySuccess(Stop)
+        break
+      case "WaitComplete":
         oldState.ex.forEach((e: Throwable) => {
-          this.scheduler.reportFailure(e);
-        });
-        this._out.onError(oldState.ex);
-        this._asyncUpstreamAck.trySuccess(Stop);
-        break;
-      case 'Canceled':
-        this.scheduler.reportFailure(ex);
-        break;
+          this.scheduler.reportFailure(e)
+        })
+        this._out.onError(oldState.ex)
+        this._asyncUpstreamAck.trySuccess(Stop)
+        break
+      case "Canceled":
+        this.scheduler.reportFailure(ex)
+        break
     }
   }
 
   private signalChildOnComplete(ack: Ack, isStop: boolean): void {
-    const oldState = this._stateGetAndSet(FlatMapState.WaitOnNextChild(ack));
+    const oldState = this._stateGetAndSet(FlatMapState.WaitOnNextChild(ack))
     switch (oldState.kind) {
-      case 'WaitOnActiveChild':
+      case "WaitOnActiveChild":
         // pass
-        break;
-      case 'WaitOnNextChild':
-        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
-        break;
-      case 'Active':
-        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
-        break;
-      case 'Canceled':
-        this._asyncUpstreamAck.trySuccess(Stop);
-        break;
-      case 'WaitComplete':
+        break
+      case "WaitOnNextChild":
+        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck))
+        break
+      case "Active":
+        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck))
+        break
+      case "Canceled":
+        this._asyncUpstreamAck.trySuccess(Stop)
+        break
+      case "WaitComplete":
         if (!isStop) {
-          oldState.ex.fold(() => this._sendOnComplete(), (e) => this._out.onError(e));
+          oldState.ex.fold(() => this._sendOnComplete(), (e) => this._out.onError(e))
         } else {
           Ack.syncOn(ack, (r) => {
             r.failed().forEach((e) => {
-              this.scheduler.reportFailure(e);
+              this.scheduler.reportFailure(e)
             })
           })
         }
@@ -113,10 +129,9 @@ class ChildSubscriber<B> implements Subscriber<B> {
   }
 }
 
-
 export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
-  private _errors: Throwable[] = [];
-  private _state: FlatMapState = FlatMapState.WaitOnNextChild(Continue);
+  private _errors: Throwable[] = []
+  private _state: FlatMapState = FlatMapState.WaitOnNextChild(Continue)
 
   constructor(private readonly _out: Subscriber<B>,
               private readonly _fn: (a: A) => ObservableInstance<B>,
@@ -126,26 +141,26 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
   }
 
   private stateSetAndGet(newState: FlatMapState): FlatMapState {
-    const oldState = this._state;
-    this._state = newState;
-    return oldState;
+    const oldState = this._state
+    this._state = newState
+    return oldState
   }
 
   onNext(elem: A): Ack {
-    let streamErrors = true;
+    let streamErrors = true
     try {
-      const asyncUpstreamAck = FutureMaker.empty<SyncAck>();
-      const child = this._fn(elem);
+      const asyncUpstreamAck = FutureMaker.empty<SyncAck>()
+      const child = this._fn(elem)
       // No longer allowed to stream errors downstream
-      streamErrors = false;
+      streamErrors = false
 
-      this.stateSetAndGet(FlatMapState.WaitOnActiveChild);
+      this.stateSetAndGet(FlatMapState.WaitOnActiveChild)
 
       let cancelable = child.unsafeSubscribeFn(new ChildSubscriber(
         this._out,
         this._errors,
         (newState) => {
-          return this.stateSetAndGet(newState);
+          return this.stateSetAndGet(newState)
         },
         this._delayErrors,
         asyncUpstreamAck,
@@ -153,138 +168,138 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
           this.sendOnComplete()
         },
         this.scheduler
-      ));
+      ))
 
-      const oldState: FlatMapState = this.stateSetAndGet(FlatMapState.Active(cancelable));
+      const oldState: FlatMapState = this.stateSetAndGet(FlatMapState.Active(cancelable))
 
       switch (oldState.kind) {
-        case 'WaitOnNextChild':
+        case "WaitOnNextChild":
           // Task execution was synchronous, w00t, so redo state!
-          this.stateSetAndGet(oldState);
-          const ack: Ack = oldState.ack;
+          this.stateSetAndGet(oldState)
+          const ack: Ack = oldState.ack
           if (ack === Continue || ack === Stop) {
-            return ack;
+            return ack
           } else {
             return ack.recover(e => {
-              this.scheduler.reportFailure(e);
-              return Stop;
+              this.scheduler.reportFailure(e)
+              return Stop
             })
           }
-        case 'WaitOnActiveChild':
+        case "WaitOnActiveChild":
           // Expected outcome for async observables
-          const acAck: AsyncAck = asyncUpstreamAck.future();
+          const acAck: AsyncAck = asyncUpstreamAck.future()
           return acAck.recover(e => {
-            this.scheduler.reportFailure(e);
-            return Stop;
-          });
-        case 'WaitComplete':
+            this.scheduler.reportFailure(e)
+            return Stop
+          })
+        case "WaitComplete":
           // Branch that can happen in case the child has finished
           // already in error, so stop further onNext events.
-          this.stateSetAndGet(oldState);
-          return Stop;
-        case 'Canceled':
+          this.stateSetAndGet(oldState)
+          return Stop
+        case "Canceled":
           // Race condition, oops, now cancel the active task
-          cancelable.cancel();
+          cancelable.cancel()
           // Now restore the state and pretend that this didn't
           // happen :-) Note that this is probably going to call
           // `ack.cancel()` a second time, but that's OK
-          this.cancel();
-          return Stop;
-        case 'Active':
+          this.cancel()
+          return Stop
+        case "Active":
           // This should never, ever happen!
           // Something is screwed up in our state machine :-(
-          cancelable.cancel();
-          return Stop;
+          cancelable.cancel()
+          return Stop
         default:
           // FIXME - find why compiler is not satisfied by specified cases!
-          return Stop;
+          return Stop
       }
     } catch (e) {
       if (streamErrors) {
-        this.onError(e);
-        return Stop;
+        this.onError(e)
+        return Stop
       } else {
-        this.scheduler.reportFailure(e);
-        return Stop;
+        this.scheduler.reportFailure(e)
+        return Stop
       }
     }
   }
 
   onComplete(): void {
-    this.signalFinish(None);
+    this.signalFinish(None)
   }
 
   onError(ex: Throwable): void {
     if (!this._delayErrors) {
       this.signalFinish(Some(ex))
     } else {
-      this._errors.push(ex);
-      this.signalFinish(None);
+      this._errors.push(ex)
+      this.signalFinish(None)
     }
   }
 
   cancel(): void {
     switch (this._state.kind) {
-      case 'Active':
-        const activeRef = this._state.ref;
-        this.stateSetAndGet(FlatMapState.Canceled);
-        activeRef.cancel();
-        break;
-      case 'WaitComplete':
-        const waitRef = this._state.ref;
-        this.stateSetAndGet(FlatMapState.Canceled);
-        waitRef.cancel();
-        break;
-      case 'Canceled':
+      case "Active":
+        const activeRef = this._state.ref
+        this.stateSetAndGet(FlatMapState.Canceled)
+        activeRef.cancel()
+        break
+      case "WaitComplete":
+        const waitRef = this._state.ref
+        this.stateSetAndGet(FlatMapState.Canceled)
+        waitRef.cancel()
+        break
+      case "Canceled":
         // pass
-        break;
+        break
     }
   }
 
   private signalFinish(ex: Option<Throwable>): void {
-    let childRef: Cancelable;
+    let childRef: Cancelable
 
     switch (this._state.kind) {
-      case 'Active':
-        childRef = this._state.ref;
-        break;
-      case 'WaitComplete':
-        childRef = this._state.ref;
-        break;
+      case "Active":
+        childRef = this._state.ref
+        break
+      case "WaitComplete":
+        childRef = this._state.ref
+        break
       default:
-        childRef = Cancelable.empty();
+        childRef = Cancelable.empty()
     }
 
-    const oldState = this.stateSetAndGet(FlatMapState.WaitComplete(ex, childRef));
+    const oldState = this.stateSetAndGet(FlatMapState.WaitComplete(ex, childRef))
 
     switch (oldState.kind) {
-      case 'WaitOnNextChild':
+      case "WaitOnNextChild":
         if (ex.isEmpty()) {
-          this.sendOnComplete();
+          this.sendOnComplete()
         } else {
-          this._out.onError(ex.get());
+          this._out.onError(ex.get())
         }
-        this.stateSetAndGet(FlatMapState.Canceled);
-        break;
-      case 'Active':
+        this.stateSetAndGet(FlatMapState.Canceled)
+        break
+      case "Active":
         // pass;
-        break;
-      case 'WaitComplete':
-        this.stateSetAndGet(oldState);
-        break;
-      case 'Canceled':
-        this.stateSetAndGet(oldState);
-        break;
-      case 'WaitOnActiveChild':
+        break
+      case "WaitComplete":
+        this.stateSetAndGet(oldState)
+        break
+      case "Canceled":
+        this.stateSetAndGet(oldState)
+        break
+      case "WaitOnActiveChild":
         // TODO report invalid state
-        break;
+        break
     }
   }
 
   private sendOnComplete(): void {
     if (this._delayErrors && this._errors.length > 0) {
       // TODO add CompositeException
-      this._out.onError(new Error("Something went wrong (this should be replaced with CompositeException)"));
+      this._out.onError(new Error("Something went wrong (this should be replaced with CompositeException)"))
     } else {
       this._out.onComplete()
     }
@@ -294,22 +309,22 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
 export namespace FlatMapState {
   export namespace States {
     export class WaitOnNextChild {
-      readonly kind = "WaitOnNextChild";
+      readonly kind = "WaitOnNextChild"
 
       constructor(readonly ack: Ack) {
       }
     }
 
     export class WaitOnActiveChild {
-      readonly kind = "WaitOnActiveChild";
+      readonly kind = "WaitOnActiveChild"
     }
 
     export class Canceled {
-      readonly kind = "Canceled";
+      readonly kind = "Canceled"
     }
 
     export class WaitComplete {
-      readonly kind = "WaitComplete";
+      readonly kind = "WaitComplete"
 
       constructor(readonly ex: Option<Throwable>,
                   readonly ref: Cancelable) {
@@ -317,7 +332,7 @@ export namespace FlatMapState {
     }
 
     export class Active {
-      readonly kind = "Active";
+      readonly kind = "Active"
 
       constructor(readonly ref: Cancelable) {
       }
@@ -325,19 +340,19 @@ export namespace FlatMapState {
   }
 
   export function WaitOnNextChild(ack: Ack): States.WaitOnNextChild {
-    return new States.WaitOnNextChild(ack);
+    return new States.WaitOnNextChild(ack)
   }
 
-  export const WaitOnActiveChild = new States.WaitOnActiveChild();
+  export const WaitOnActiveChild = new States.WaitOnActiveChild()
 
-  export const Canceled = new States.Canceled();
+  export const Canceled = new States.Canceled()
 
   export function WaitComplete(ex: Option<Throwable>, ref: Cancelable) {
-    return new States.WaitComplete(ex, ref);
+    return new States.WaitComplete(ex, ref)
   }
 
   export function Active(ref: Cancelable) {
-    return new States.Active(ref);
+    return new States.Active(ref)
   }
 }
 
@@ -345,4 +360,4 @@ export type FlatMapState = FlatMapState.States.WaitOnNextChild
   | FlatMapState.States.WaitOnActiveChild
   | FlatMapState.States.Canceled
   | FlatMapState.States.WaitComplete
-  | FlatMapState.States.Active;
+  | FlatMapState.States.Active
