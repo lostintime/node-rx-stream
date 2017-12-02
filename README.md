@@ -118,10 +118,10 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `observeOn[B >: A](s: Scheduler, os: OverflowStrategy[B]): Observable[B]`
   * [ ] `onCancelTriggerError: Observable[A]`
   * [ ] `onErrorFallbackTo[B >: A](that: Observable[B]): Observable[B]`
-  * [ ] `onErrorHandle[B >: A](f: Throwable => B): Observable[B]`
+  * [x] `onErrorHandle[B >: A](f: Throwable => B): Observable[B]`
   * [ ] `onErrorRecover[B >: A](pf: PartialFunction[Throwable, B]): Observable[B]`
   * [ ] `onErrorRecoverWith[B >: A](pf: PartialFunction[Throwable, Observable[B]]): Observable[B]`
-  * [ ] `onErrorHandleWith[B >: A](f: Throwable => Observable[B]): Observable[B]`
+  * [x] `onErrorHandleWith[B >: A](f: Throwable => Observable[B]): Observable[B]`
   * [ ] `onErrorRestart(maxRetries: Long): Observable[A]`
   * [ ] `onErrorRestartIf(p: Throwable => Boolean): Observable[A]`
   * [ ] `onErrorRestartUnlimited: Observable[A]`
