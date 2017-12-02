@@ -5,11 +5,6 @@ TypeScript port of [Monix](https://github.com/monix/monix) reactive streams libr
 All credits goes to [monix authors](https://github.com/monix/monix/graphs/contributors).
 
 
-## Issues
-
-  * [ ] takeUntil(sigTrigger) doesn't work well with onErrorRestartUnlimited(). Error causes trigger to cancel also.
-
-
 ## TODO
 
   * [x] implemented
@@ -317,3 +312,27 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [x] `def subscribe(observer: Observer[A])(implicit s: Scheduler): Cancelable` (`subscribeWith`)
   * [x] `subscribe(nextFn: A => Future[Ack], errorFn: Throwable => Unit, completedFn: () => Unit)`
   
+  
+## Notes
+
+For synchronous sources, in order to use `takeUntil` and `onErrorRestart` - need to add 
+_asyncBoundary_ (ex: bufferWithPressure), otherwise event loop may never reach `takeUntil`
+
+```$typescript
+let failed = false;
+
+Observable.loop()
+  .map((n): number => {
+    // will throw here
+    if (n == 3  && !failed) {
+      failed = true;
+      throw new Error('something went wrong');
+    }
+
+    return n;
+  })
+  .bufferWithPressure(10) // this will break synchronous loop, to "make room" async events (sigTrigger)
+  .onErrorRestartUnlimited()
+  .takeUntil(sigTrigger)
+
+```

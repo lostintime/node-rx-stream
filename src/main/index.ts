@@ -44,8 +44,9 @@ items
 
     return n;
   })
-  .takeUntil(sigTrigger)
+  .bufferWithPressure(10)
   .onErrorRestartUnlimited()
+  .takeUntil(sigTrigger)
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);
