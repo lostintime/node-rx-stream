@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "strictFunctionTypes": true,
     "sourceMap": true,
+    "declaration": true,
     "allowJs": false
   },
   "include": [

@@ -1,11 +1,11 @@
 import {Future, Try, Success, Scheduler, Throwable} from 'funfix';
 
-export type AckStop = 'stop';
-export type AckContinue = 'continue';
+export type AckStop = 'Stop';
+export type AckContinue = 'Continue';
 export type SyncAck = AckStop | AckContinue;
 export type AsyncAck = Future<SyncAck>
-export const Stop: AckStop = 'stop';
-export const Continue: AckContinue = 'continue';
+export const Stop: AckStop = 'Stop';
+export const Continue: AckContinue = 'Continue';
 
 export type Ack = SyncAck | AsyncAck
 
@@ -71,22 +71,6 @@ export namespace Ack {
 
 }
 
-/**
- * @deprecated use Ack.syncOn()
- */
-export const ackSyncOn = Ack.syncOn;
-
-/**
- * @deprecated use Ack.syncOnContinue()
- */
-export const ackSyncOnContinue = Ack.syncOnContinue;
-
-/**
- * @deprecated use Ack.syncOnStopOrFailure()
- */
-export const ackSyncOnStopOrFailure = Ack.syncOnStopOrFailure;
-
-
 export interface Observer<T> {
   onNext(elem: T): Ack;
 
@@ -101,8 +85,8 @@ export namespace Observer {
   }
 }
 
-interface WithScheduler<T> {
-  readonly scheduler: Scheduler // TODO transform to a method?
+export interface WithScheduler<T> {
+  readonly scheduler: Scheduler
 }
 
 export interface Subscriber<T> extends WithScheduler<T>, Observer<T> {

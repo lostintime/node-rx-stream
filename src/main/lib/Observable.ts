@@ -19,7 +19,7 @@ applyMixins(ObservableInstance, [OperatorsMixin]);
 /**
  * https://github.com/monix/monix/blob/master/monix-reactive/shared/src/main/scala/monix/reactive/Observable.scala
  */
-export default abstract class Observable<T> extends ObservableInstance<T> {
+export abstract class Observable<T> extends ObservableInstance<T> {
 
   static empty<A>(): Observable<A> {
     return new EmptyObservable<A>();
@@ -89,3 +89,5 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
     });
   });
 }
+
+export default Observable;

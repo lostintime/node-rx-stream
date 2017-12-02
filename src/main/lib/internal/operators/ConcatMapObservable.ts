@@ -1,7 +1,5 @@
 import ObservableInstance from "../ObservableInstance";
-import {
-  Ack, Continue, Stop, Subscriber, SyncAck, ackSyncOn, ackSyncOnStopOrFailure, AsyncAck
-} from "../../Reactive";
+import {Ack, Continue, Stop, Subscriber, SyncAck, AsyncAck} from "../../Reactive";
 import {Scheduler, Option, None, Some, FutureMaker, Cancelable, Throwable} from 'funfix';
 
 
@@ -42,7 +40,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
 
   onNext(elem: B): Ack {
     this._ack = this._out.onNext(elem);
-    return ackSyncOnStopOrFailure(this._ack, () => this.signalChildOnComplete(this._ack, true));
+    return Ack.syncOnStopOrFailure(this._ack, () => this.signalChildOnComplete(this._ack, true));
   }
 
   onComplete(): void {
@@ -93,10 +91,10 @@ class ChildSubscriber<B> implements Subscriber<B> {
         // pass
         break;
       case 'WaitOnNextChild':
-        ackSyncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
+        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
         break;
       case 'Active':
-        ackSyncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
+        Ack.syncOn(ack, (syncAck) => this._asyncUpstreamAck.tryComplete(syncAck));
         break;
       case 'Canceled':
         this._asyncUpstreamAck.trySuccess(Stop);
@@ -105,7 +103,7 @@ class ChildSubscriber<B> implements Subscriber<B> {
         if (!isStop) {
           oldState.ex.fold(() => this._sendOnComplete(), (e) => this._out.onError(e));
         } else {
-          ackSyncOn(ack, (r) => {
+          Ack.syncOn(ack, (r) => {
             r.failed().forEach((e) => {
               this.scheduler.reportFailure(e);
             })
@@ -293,7 +291,7 @@ export class ConcatMapSubscriber<A, B> implements Subscriber<A>, Cancelable {
   }
 }
 
-namespace FlatMapState {
+export namespace FlatMapState {
   export namespace States {
     export class WaitOnNextChild {
       readonly kind = "WaitOnNextChild";

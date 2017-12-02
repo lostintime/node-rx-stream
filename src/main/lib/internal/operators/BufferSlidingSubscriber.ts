@@ -1,4 +1,4 @@
-import {Ack, ackSyncOnContinue, Continue, Stop, Subscriber} from "../../Reactive";
+import {Ack, Continue, Stop, Subscriber} from "../../Reactive";
 import {Scheduler, Throwable} from 'funfix';
 
 
@@ -67,7 +67,7 @@ export default class BufferSlidingSubscriber<A> implements Subscriber<A> {
           this._ack = Continue;
         }
 
-        ackSyncOnContinue(this._ack, () => {
+        Ack.syncOnContinue(this._ack, () => {
           this._out.onNext(this._buffer);
           this._out.onComplete();
           this._buffer = [];
