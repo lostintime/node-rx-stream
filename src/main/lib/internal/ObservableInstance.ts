@@ -1,12 +1,27 @@
-import {Ack, Operator, Subscriber} from "../Reactive";
-import SafeSubscriber from "./builders/SafeSubscriber";
-import OperatorsMixin from "./mixins/OperatorsMixin";
-import {Scheduler, IO, Future, Cancelable, Throwable, Option} from "funfix";
-import SubscriberWrap from "./observers/SubscriberWrap";
-
+/*
+ * Copyright (c) 2017 by The RxStream Project Developers.
+ * Some rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Ack, Operator, Subscriber } from "../Reactive"
+import SafeSubscriber from "./builders/SafeSubscriber"
+import OperatorsMixin from "./mixins/OperatorsMixin"
+import { Scheduler, IO, Future, Cancelable, Throwable, Option } from "funfix"
+import SubscriberWrap from "./observers/SubscriberWrap"
 
 export default abstract class ObservableInstance<A> implements OperatorsMixin<A> {
-  abstract unsafeSubscribeFn(out: Subscriber<A>): Cancelable;
+  abstract unsafeSubscribeFn(out: Subscriber<A>): Cancelable
 
   subscribeWith(out: Subscriber<A>): Cancelable {
     return this.unsafeSubscribeFn(new SafeSubscriber<A>(out))
@@ -16,112 +31,112 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
             errorFn?: (e: Throwable) => void,
             completeFn?: () => void,
             scheduler?: Scheduler): Cancelable {
-    return this.subscribeWith(new SubscriberWrap(nextFn, errorFn, completeFn, scheduler));
+    return this.subscribeWith(new SubscriberWrap(nextFn, errorFn, completeFn, scheduler))
   }
 
-  liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>;
+  liftByOperator: <B>(operator: Operator<A, B>) => ObservableInstance<B>
 
-  map: <B>(fn: (a: A) => B) => ObservableInstance<B>;
+  map: <B>(fn: (a: A) => B) => ObservableInstance<B>
 
-  mapTask: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>;
+  mapTask: <B>(fn: (a: A) => IO<B>) => ObservableInstance<B>
 
-  mapFuture: <B>(fn: (a: A) => Future<B>) => ObservableInstance<B>;
+  mapFuture: <B>(fn: (a: A) => Future<B>) => ObservableInstance<B>
 
-  flatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+  flatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>
 
-  flatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+  flatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>
 
-  concatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+  concatMap: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>
 
-  concatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>;
+  concatMapDelayErrors: <B>(fn: (a: A) => ObservableInstance<B>) => ObservableInstance<B>
 
-  scan: <S>(seed: () => S, op: (s: S, a: A) => S) => ObservableInstance<S>;
+  scan: <S>(seed: () => S, op: (s: S, a: A) => S) => ObservableInstance<S>
 
-  scanTask: <S>(seed: () => IO<S>, op: (s: S, a: A) => IO<S>) => ObservableInstance<S>;
+  scanTask: <S>(seed: () => IO<S>, op: (s: S, a: A) => IO<S>) => ObservableInstance<S>
 
-  filter: (fn: (a: A) => boolean) => ObservableInstance<A>;
+  filter: (fn: (a: A) => boolean) => ObservableInstance<A>
 
-  take: (n: number) => ObservableInstance<A>;
+  take: (n: number) => ObservableInstance<A>
 
-  drop: (n: number) => ObservableInstance<A>;
+  drop: (n: number) => ObservableInstance<A>
 
-  takeLast: (n: number) => ObservableInstance<A>;
+  takeLast: (n: number) => ObservableInstance<A>
 
-  last: () => ObservableInstance<A>;
+  last: () => ObservableInstance<A>
 
-  takeWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
+  takeWhile: (p: (elem: A) => boolean) => ObservableInstance<A>
 
-  dropWhile: (p: (elem: A) => boolean) => ObservableInstance<A>;
+  dropWhile: (p: (elem: A) => boolean) => ObservableInstance<A>
 
-  takeUntil: (trigger: ObservableInstance<any>) => ObservableInstance<A>;
+  takeUntil: (trigger: ObservableInstance<any>) => ObservableInstance<A>
 
-  failed: () => ObservableInstance<Throwable>;
+  failed: () => ObservableInstance<Throwable>
 
-  bufferWithPressure: (size: number) => ObservableInstance<A>;
+  bufferWithPressure: (size: number) => ObservableInstance<A>
 
-  bufferTumbling: (count: number) => ObservableInstance<A[]>;
+  bufferTumbling: (count: number) => ObservableInstance<A[]>
 
-  bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>;
+  bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>
 
-  headL: () => IO<A>;
+  headL: () => IO<A>
 
-  firstL: () => IO<A>;
+  firstL: () => IO<A>
 
-  firstOrElseL: (fn: () => A) => IO<A>;
+  firstOrElseL: (fn: () => A) => IO<A>
 
-  firstOrElseF: (fn: () => A) => ObservableInstance<A>;
+  firstOrElseF: (fn: () => A) => ObservableInstance<A>
 
-  headOrElseF: (fn: () => A) => ObservableInstance<A>;
+  headOrElseF: (fn: () => A) => ObservableInstance<A>
 
-  headOptionL: () => IO<Option<A>>;
+  headOptionL: () => IO<Option<A>>
 
-  firstOptionL: () => IO<Option<A>>;
+  firstOptionL: () => IO<Option<A>>
 
-  headF: () => ObservableInstance<A>;
+  headF: () => ObservableInstance<A>
 
-  findL: (p: (a: A) => boolean) => IO<Option<A>>;
+  findL: (p: (a: A) => boolean) => IO<Option<A>>
 
-  findF: (p: (a: A) => boolean) => ObservableInstance<A>;
+  findF: (p: (a: A) => boolean) => ObservableInstance<A>
 
-  existsL: (p: (a: A) => boolean) => IO<boolean>;
+  existsL: (p: (a: A) => boolean) => IO<boolean>
 
-  forAll: (p: (a: A) => boolean) => IO<boolean>;
+  forAll: (p: (a: A) => boolean) => IO<boolean>
 
-  lastOrElseL: (fn: () => A) => IO<A>;
+  lastOrElseL: (fn: () => A) => IO<A>
 
-  lastOptionL: () => IO<Option<A>>;
+  lastOptionL: () => IO<Option<A>>
 
-  lastL: () => IO<A>;
+  lastL: () => IO<A>
 
-  isEmptyL: () => IO<boolean>;
+  isEmptyL: () => IO<boolean>
 
-  isEmptyF: () => ObservableInstance<boolean>;
+  isEmptyF: () => ObservableInstance<boolean>
 
-  countL: () => IO<number>;
+  countL: () => IO<number>
 
-  countF: () => ObservableInstance<number>;
+  countF: () => ObservableInstance<number>
 
-  foldLeftF: <R>(seed: () => R, op: (r: R, a: A) => R) => ObservableInstance<R>;
+  foldLeftF: <R>(seed: () => R, op: (r: R, a: A) => R) => ObservableInstance<R>
 
-  foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>;
+  foldLeftL: <R>(seed: () => R, op: (r: R, a: A) => R) => IO<R>
 
-  defaultIfEmpty: (f: () => A) => ObservableInstance<A>;
+  defaultIfEmpty: (f: () => A) => ObservableInstance<A>
 
-  takeEveryNth: (n: number) => ObservableInstance<A>;
+  takeEveryNth: (n: number) => ObservableInstance<A>
 
-  onErrorHandleWith: (f: (e: Throwable) => ObservableInstance<A>) => ObservableInstance<A>;
+  onErrorHandleWith: (f: (e: Throwable) => ObservableInstance<A>) => ObservableInstance<A>
 
-  onErrorHandle: (f: (e: Throwable) => A) => ObservableInstance<A>;
+  onErrorHandle: (f: (e: Throwable) => A) => ObservableInstance<A>
 
-  onErrorFallbackTo: (that: ObservableInstance<A>) => ObservableInstance<A>;
+  onErrorFallbackTo: (that: ObservableInstance<A>) => ObservableInstance<A>
 
-  onErrorRestart: (maxRetries: number) => ObservableInstance<A>;
+  onErrorRestart: (maxRetries: number) => ObservableInstance<A>
 
-  onErrorRestartUnlimited: () => ObservableInstance<A>;
+  onErrorRestartUnlimited: () => ObservableInstance<A>
 
-  onErrorRestartIf: (p: (e: Throwable) => boolean) => ObservableInstance<A>;
+  onErrorRestartIf: (p: (e: Throwable) => boolean) => ObservableInstance<A>
 
-  foreachL: (onNext: (a: A) => void) => IO<any>;
+  foreachL: (onNext: (a: A) => void) => IO<any>
 
-  foreach:(onNext: (a: A) => void) => Future<any>;
+  foreach: (onNext: (a: A) => void) => Future<any>
 }
