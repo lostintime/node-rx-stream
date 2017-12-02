@@ -24,6 +24,7 @@ import ObservableInstance from "../ObservableInstance";
 import OnErrorRecoverWithObservable from "../operators/OnErrorRecoverWithObservable";
 import OnErrorRetryCountedObservable from "../operators/OnErrorRetryCountedObservable";
 import OnErrorRetryIfObservable from "../operators/OnErrorRetryIfObservable";
+import CountSubscriber from "../operators/CountSubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -140,6 +141,10 @@ export default abstract class OperatorsMixin<A> {
     return this.take(1);
   }
 
+  headL(): IO<A> {
+    return this.firstL();
+  }
+
   firstL(): IO<A> {
     return this.firstOrElseL(() => {
       throw new Error('first on empty observable');
@@ -192,6 +197,14 @@ export default abstract class OperatorsMixin<A> {
     return this.lastOrElseL(() => {
       throw new Error('last on empty observable');
     })
+  }
+
+  countL(): IO<number> {
+    return this.countF().firstL()
+  }
+
+  countF(): ObservableInstance<number> {
+    return this.liftByOperator((out: Subscriber<number>) => new CountSubscriber(out))
   }
 
   foldLeftF<R>(seed: () => R, op: (r: R, a: A) => R): Observable<R> {

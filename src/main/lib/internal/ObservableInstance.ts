@@ -64,6 +64,8 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   bufferSliding: (count: number, skip: number) => ObservableInstance<A[]>;
 
+  headL: () => IO<A>;
+
   firstL: () => IO<A>;
 
   firstOrElseL: (fn: () => A) => IO<A>;
@@ -87,6 +89,10 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   lastOptionL: () => IO<Option<A>>;
 
   lastL: () => IO<A>;
+
+  countL: () => IO<number>;
+
+  countF: () => ObservableInstance<number>;
 
   foldLeftF: <R>(seed: () => R, op: (r: R, a: A) => R) => ObservableInstance<R>;
 

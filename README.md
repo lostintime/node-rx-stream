@@ -117,14 +117,14 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `observeOn(s: Scheduler): Observable[A]`
   * [ ] `observeOn[B >: A](s: Scheduler, os: OverflowStrategy[B]): Observable[B]`
   * [ ] `onCancelTriggerError: Observable[A]`
-  * [ ] `onErrorFallbackTo[B >: A](that: Observable[B]): Observable[B]`
+  * [x] `onErrorFallbackTo[B >: A](that: Observable[B]): Observable[B]`
   * [x] `onErrorHandle[B >: A](f: Throwable => B): Observable[B]`
-  * [ ] `onErrorRecover[B >: A](pf: PartialFunction[Throwable, B]): Observable[B]`
-  * [ ] `onErrorRecoverWith[B >: A](pf: PartialFunction[Throwable, Observable[B]]): Observable[B]`
+  * [-] `onErrorRecover[B >: A](pf: PartialFunction[Throwable, B]): Observable[B]`
+  * [-] `onErrorRecoverWith[B >: A](pf: PartialFunction[Throwable, Observable[B]]): Observable[B]`
   * [x] `onErrorHandleWith[B >: A](f: Throwable => Observable[B]): Observable[B]`
-  * [ ] `onErrorRestart(maxRetries: Long): Observable[A]`
-  * [ ] `onErrorRestartIf(p: Throwable => Boolean): Observable[A]`
-  * [ ] `onErrorRestartUnlimited: Observable[A]`
+  * [x] `onErrorRestart(maxRetries: Long): Observable[A]`
+  * [x] `onErrorRestartIf(p: Throwable => Boolean): Observable[A]`
+  * [x] `onErrorRestartUnlimited: Observable[A]`
   * [ ] `pipeThrough[I >: A, B](pipe: Pipe[I, B]): Observable[B]`
   * [ ] `publishSelector[R](f: Observable[A] => Observable[R]): Observable[R]`
   * [ ] `pipeThroughSelector[S >: A, B, R](pipe: Pipe[S, B], f: Observable[B] => Observable[R]): Observable[R]`
@@ -183,14 +183,14 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [ ] `runAsyncGetLast(implicit s: Scheduler): CancelableFuture[Option[A]]`
   * [x] `lastOptionL: Task[Option[A]]`
   * [x] `lastOrElseL[B >: A](default: => B): Task[B]`
-  * [ ] `countL: Task[Long]`
-  * [ ] `countF: Observable[Long]`
+  * [x] `countL: Task[Long]`
+  * [x] `countF: Observable[Long]`
   * [x] `findL(p: A => Boolean): Task[Option[A]]`
   * [ ] `foldL[AA >: A](implicit A: Monoid[AA]): Task[AA]`
   * [ ] `foldF[AA >: A](implicit A: Monoid[AA]): Observable[AA]`
   * [ ] `foldWhileLeftL[S](seed: => S)(op: (S, A) => Either[S, S]): Task[S]`
   * [ ] `foldWhileLeftF[S](seed: => S)(op: (S, A) => Either[S, S]): Observable[S]`
-  * [-] `headL: Task[A] = firstL`
+  * [x] `headL: Task[A] = firstL`
   * [x] `firstL: Task[A]`
   * [x] `firstOrElseL[B >: A](default: => B): Task[B]`
   * [ ] `forAllL(p: A => Boolean): Task[Boolean]`
