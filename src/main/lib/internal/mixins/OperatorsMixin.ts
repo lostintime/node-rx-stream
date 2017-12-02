@@ -23,6 +23,7 @@ import FoldLeftObservable from "../operators/FoldLeftObservable";
 import ObservableInstance from "../ObservableInstance";
 import OnErrorRecoverWithObservable from "../operators/OnErrorRecoverWithObservable";
 import OnErrorRetryCountedObservable from "../operators/OnErrorRetryCountedObservable";
+import OnErrorRetryIfObservable from "../operators/OnErrorRetryIfObservable";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -223,5 +224,9 @@ export default abstract class OperatorsMixin<A> {
 
   onErrorRestartUnlimited(): Observable<A> {
     return new OnErrorRetryCountedObservable(this, -1);
+  }
+
+  onErrorRestartIf(p: (e: Throwable) => boolean): Observable<A> {
+    return new OnErrorRetryIfObservable(this, p);
   }
 }

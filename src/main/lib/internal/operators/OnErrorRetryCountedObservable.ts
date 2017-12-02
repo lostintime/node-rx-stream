@@ -17,7 +17,7 @@ export default class OnErrorRetryCountedObservable<A> extends ObservableInstance
   }
 
   loop(out: Subscriber<A>, task: MultiAssignCancelable, retryIdx: number): void {
-    const cancelable = this._source.unsafeSubscribeFn(new OnErrorRetryCountedSubscriber(out, this, task, this._maxRetries, retryIdx));
+    const cancelable = this._source.unsafeSubscribeFn(new OnErrorRetryCountedSubscriber(this, out, task, this._maxRetries, retryIdx));
     task.update(cancelable);
   }
 }
@@ -27,8 +27,8 @@ class OnErrorRetryCountedSubscriber<A> implements Subscriber<A> {
   private _isDone: boolean = false;
   private _ack: Ack = Continue;
 
-  constructor(private readonly _out: Subscriber<A>,
-              private readonly _parent: OnErrorRetryCountedObservable<A>,
+  constructor(private readonly _parent: OnErrorRetryCountedObservable<A>,
+              private readonly _out: Subscriber<A>,
               private readonly _task: MultiAssignCancelable,
               private readonly _maxRetries: number,
               private readonly _retryIdx: number,

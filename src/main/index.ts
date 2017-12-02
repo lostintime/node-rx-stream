@@ -32,20 +32,20 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
   return c;
 });
 
-let failed  = false;
+let failsCnt  = 0;
 
 items
   .map((n): number => {
     // will throw here
-    if (n == 3  && !failed) {
-      failed = true;
+    if (n == 30) {
+      failsCnt += 1;
       throw new Error('something went wrong');
     }
 
     return n;
   })
+  .onErrorRestartIf(() => failsCnt < 3)
   .bufferWithPressure(10)
-  .onErrorRestartUnlimited()
   .takeUntil(sigTrigger)
   .subscribe(
     (t) => {

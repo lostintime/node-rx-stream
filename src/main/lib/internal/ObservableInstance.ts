@@ -101,4 +101,6 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
   onErrorRestart: (maxRetries: number) => ObservableInstance<A>;
 
   onErrorRestartUnlimited: () => ObservableInstance<A>;
+
+  onErrorRestartIf: (p: (e: Throwable) => boolean) => ObservableInstance<A>;
 }
