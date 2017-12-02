@@ -1,5 +1,5 @@
-Rx Stream
-=========
+RxStream
+========
 
 TypeScript port of [Monix](https://github.com/monix/monix) reactive streams module.
 All credits goes to [monix authors](https://github.com/monix/monix/graphs/contributors)!
