@@ -220,4 +220,8 @@ export default abstract class OperatorsMixin<A> {
 
     return new OnErrorRetryCountedObservable(this, maxRetries);
   }
+
+  onErrorRestartUnlimited(): Observable<A> {
+    return new OnErrorRetryCountedObservable(this, -1);
+  }
 }

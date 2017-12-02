@@ -5,6 +5,11 @@ TypeScript port of [Monix](https://github.com/monix/monix) reactive streams libr
 All credits goes to [monix authors](https://github.com/monix/monix/graphs/contributors).
 
 
+## Issues
+
+  * [ ] takeUntil(sigTrigger) doesn't work well with onErrorRestartUnlimited(). Error causes trigger to cancel also.
+
+
 ## TODO
 
   * [x] implemented

@@ -4,7 +4,6 @@ import ObservableInstance from "../ObservableInstance";
 
 
 export default class OnErrorRetryCountedObservable<A> extends ObservableInstance<A> {
-
   constructor(private readonly _source,
               private readonly _maxRetries: number) {
     super();
@@ -42,10 +41,6 @@ class OnErrorRetryCountedSubscriber<A> implements Subscriber<A> {
   }
 
   onComplete(): void {
-    if (!this._isDone) {
-      this._isDone = true;
-      this._out.onComplete();
-    }
   }
 
   onError(e: Throwable): void {

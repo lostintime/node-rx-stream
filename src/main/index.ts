@@ -5,8 +5,8 @@ import {SIGINT} from "constants";
 
 // TODO implement prefetch Processor - keep an N items buffer full while pushing items to downstream
 
-// const items = Observable.loop();
-const items = Observable.range(0, 10);
+const items = Observable.loop();
+// const items = Observable.range(0, 10);
 // const items = Observable.empty<number>();
 // const items = Observable.range(0, 100000000);
 // const items = Observable.range(0, 100);
@@ -32,18 +32,20 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
   return c;
 });
 
+let failed  = false;
 
 items
   .map((n): number => {
     // will throw here
-    if (n == 3 || n ==7) {
+    if (n == 3  && !failed) {
+      failed = true;
       throw new Error('something went wrong');
     }
 
     return n;
   })
-  .onErrorRestart(1)
   .takeUntil(sigTrigger)
+  .onErrorRestartUnlimited()
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);
