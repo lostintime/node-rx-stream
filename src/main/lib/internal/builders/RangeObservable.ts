@@ -1,36 +1,26 @@
 import ObservableInstance from "../ObservableInstance";
-import {AsyncAck, Cancelable, Continue, Stop, Subscriber} from "../../Reactive";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
-import BooleanCancelable from "../cancelables/BooleanCancelable";
-import {Scheduler} from 'funfix';
+import {AsyncAck, Continue, Stop, Subscriber} from "../../Reactive";
+import {Scheduler, IBoolCancelable, BoolCancelable, Cancelable} from 'funfix';
 
 
 export default class RangeObservable extends ObservableInstance<number> {
-  private readonly _from: number;
-  private readonly _until: number;
-  private readonly _step: number;
-  private readonly _scheduler: Scheduler;
-
-  constructor(from: number, to: number, step: number = 1, scheduler: Scheduler) {
+  constructor(private readonly _from: number,
+              private readonly _until: number,
+              private readonly _step: number = 1,
+              private readonly _scheduler: Scheduler) {
     super();
-    if (step == 0) {
+    if (_step == 0) {
       throw new Error('Invalid range step=0');
     }
-
-    this._from = from;
-    this._until = to;
-    this._step = step;
-
-    this._scheduler = scheduler;
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<number>): Cancelable {
     // const s = subscriber.scheduler;
-    if (!this.isInRange(this._from, this._until, this._step)) {
+    if (!RangeObservable.isInRange(this._from, this._until, this._step)) {
       subscriber.onComplete();
-      return new EmptyCancelable();
+      return Cancelable.empty();
     } else {
-      const cancelable = new BooleanCancelable();
+      const cancelable = BoolCancelable.empty();
 
       this.loop(cancelable, subscriber, this._from);
 
@@ -38,11 +28,11 @@ export default class RangeObservable extends ObservableInstance<number> {
     }
   }
 
-  private loop(cancelable: BooleanCancelable, downstream: Subscriber<number>, from: number): void {
+  private loop(cancelable: IBoolCancelable, downstream: Subscriber<number>, from: number): void {
     const ack = downstream.onNext(from);
     const nextFrom = from + this._step;
 
-    if (!this.isInRange(nextFrom, this._until, this._step)) {
+    if (!RangeObservable.isInRange(nextFrom, this._until, this._step)) {
       downstream.onComplete();
     } else {
       if (ack === Continue) {
@@ -59,7 +49,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     }
   }
 
-  private asyncBoundary(cancelable: BooleanCancelable, ack: AsyncAck, downstream: Subscriber<number>, from: number): void {
+  private asyncBoundary(cancelable: IBoolCancelable, ack: AsyncAck, downstream: Subscriber<number>, from: number): void {
     ack.onComplete((r) => {
       r.fold((e) => {
         downstream.onError(e);
@@ -73,7 +63,7 @@ export default class RangeObservable extends ObservableInstance<number> {
     });
   }
 
-  private isInRange(x: number, until: number, step: number): boolean {
+  private static isInRange(x: number, until: number, step: number): boolean {
     return (step > 0 && x < until) || (step < 0 && x > until);
   }
 }

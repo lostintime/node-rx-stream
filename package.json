@@ -1,18 +1,30 @@
 {
   "name": "rx-stream",
-  "version": "0.0.1",
-  "description": "ReactiveStreams with TypeScript",
-  "main": "index.js",
+  "author": "lostintime <lostintime.dev@gmail.com>",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "Reactive streams with TypeScript, Monix scala library port",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "TypeScript",
+    "Reactive Streams",
+    "Monix"
+  ],
+  "bugs": {
+    "url": "https://github.com/lostintime/node-rx-stream/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lostintime/node-rx-stream.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "lostintime <lostintime.dev@gmail.com>",
-  "license": "Apache-2.0",
   "dependencies": {
     "funfix": "^6.2.2"
   },
   "devDependencies": {
-    "@types/node": "^8.0.53",
     "typescript": "^2.6.1"
   }
 }

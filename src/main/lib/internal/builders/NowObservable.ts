@@ -1,17 +1,13 @@
-import {Cancelable, Subscriber} from "../../Reactive";
+import {Subscriber} from "../../Reactive";
 import ObservableInstance from "../ObservableInstance";
-import EmptyCancelable from "../cancelables/EmptyCancelable";
+import {Cancelable} from "funfix";
 
 /**
  * https://github.com/monix/monix/blob/master/monix-reactive/shared/src/main/scala/monix/reactive/internal/builders/NowObservable.scala
  */
 export default class NowObservable<T> extends ObservableInstance<T> {
-  private _isCancelled: boolean = false;
-  private _value: T;
-
-  constructor(value: T) {
+  constructor(private readonly _value: T) {
     super();
-    this._value = value;
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<T>): Cancelable {
@@ -19,6 +15,6 @@ export default class NowObservable<T> extends ObservableInstance<T> {
     subscriber.onNext(this._value);
     subscriber.onComplete();
 
-    return new EmptyCancelable();
+    return Cancelable.empty();
   }
 }

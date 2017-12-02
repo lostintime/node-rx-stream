@@ -1,26 +1,22 @@
 import ObservableInstance from "../ObservableInstance";
-import {Cancelable, Continue, Stop, Subscriber, SyncAck} from "../../Reactive";
-import BooleanCancelable from "../cancelables/BooleanCancelable";
-import {Future, Scheduler} from 'funfix';
+import {Continue, Stop, Subscriber, SyncAck} from "../../Reactive";
+import {Future, Scheduler, IBoolCancelable, BoolCancelable, Cancelable} from 'funfix';
 
 
 export default class LoopObservable extends ObservableInstance<number> {
-  private readonly _scheduler: Scheduler;
-
-  constructor(scheduler: Scheduler) {
+  constructor(private readonly _scheduler: Scheduler) {
     super();
-    this._scheduler = scheduler;
   }
 
   unsafeSubscribeFn(subscriber: Subscriber<number>): Cancelable {
-    const cancelable = new BooleanCancelable();
+    const cancelable = BoolCancelable.empty();
 
     this.loop(cancelable, subscriber, 0);
 
     return cancelable;
   }
 
-  private loop(cancelable: BooleanCancelable, downstream: Subscriber<number>, from: number): void {
+  private loop(cancelable: IBoolCancelable, downstream: Subscriber<number>, from: number): void {
     const ack = downstream.onNext(from);
     const nextFrom = from + 1;
 
@@ -37,7 +33,7 @@ export default class LoopObservable extends ObservableInstance<number> {
     }
   }
 
-  private asyncBoundary(cancelable: BooleanCancelable, ack: Future<SyncAck>, downstream: Subscriber<number>, from: number): void {
+  private asyncBoundary(cancelable: IBoolCancelable, ack: Future<SyncAck>, downstream: Subscriber<number>, from: number): void {
     ack.onComplete((r) => {
       r.fold((e) => {
         downstream.onError(e);
