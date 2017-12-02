@@ -43,9 +43,11 @@ class OnErrorRecoverWithSubscriber<A> implements Subscriber<A> {
       const fallbackTo = this._fn(e);
       streamError = false;
 
-      Ack.syncOnContinue(this._ack, () => {
-        this._cancelable.update(fallbackTo.unsafeSubscribeFn(this._out))
-      })
+      this.scheduler.trampoline(() => {
+        Ack.syncOnContinue(this._ack, () => {
+          this._cancelable.update(fallbackTo.unsafeSubscribeFn(this._out))
+        })
+      });
     } catch (e) {
       if (streamError) {
         this._out.onError(e);
