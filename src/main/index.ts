@@ -21,7 +21,6 @@ const sigTrigger: Observable<any> = Observable.create((s) => {
   };
 
   const c = BoolCancelable.of(() => {
-    console.log('cancelable handler called');
     process.removeListener('SIGINT', listener);
     process.removeListener('SIGTERM', listener);
   });
@@ -47,8 +46,9 @@ items
   .onErrorRestartIf(() => failsCnt < 3)
   .bufferWithPressure(10)
   .takeUntil(sigTrigger)
-  .takeEveryNth(5)
-  .defaultIfEmpty(() => -1)
+  .take(0)
+  // .defaultIfEmpty(() => -1)
+  .isEmptyF()
   .subscribe(
     (t) => {
       console.log(`debug.onNext(${t})`);

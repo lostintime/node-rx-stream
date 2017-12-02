@@ -91,6 +91,10 @@ export default abstract class ObservableInstance<A> implements OperatorsMixin<A>
 
   lastL: () => IO<A>;
 
+  isEmptyL: () => IO<boolean>;
+
+  isEmptyF: () => ObservableInstance<boolean>;
+
   countL: () => IO<number>;
 
   countF: () => ObservableInstance<number>;

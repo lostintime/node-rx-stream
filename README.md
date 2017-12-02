@@ -193,7 +193,7 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [x] `headL: Task[A] = firstL`
   * [x] `firstL: Task[A]`
   * [x] `firstOrElseL[B >: A](default: => B): Task[B]`
-  * [ ] `forAllL(p: A => Boolean): Task[Boolean]`
+  * [x] `forAllL(p: A => Boolean): Task[Boolean]`
   * [x] `existsL(p: A => Boolean): Task[Boolean]`
   * [x] `findF(p: A => Boolean): Observable[A]`
   * [x] `filter(p: A => Boolean): Observable[A]`
@@ -203,8 +203,8 @@ All credits goes to [monix authors](https://github.com/monix/monix/graphs/contri
   * [x] `foldLeftF[R](seed: => R)(op: (R, A) => R): Observable[R]`
   * [-] `headOrElseL[B >: A](default: => B): Task[B] = firstOrElseL(default)`
   * [x] `lastL: Task[A]`
-  * [ ] `isEmptyL: Task[Boolean]`
-  * [ ] `isEmptyF: Observable[Boolean]`
+  * [x] `isEmptyL: Task[Boolean]`
+  * [x] `isEmptyF: Observable[Boolean]`
   * [ ] `completedL: Task[Unit]`
   * [ ] `maxL[AA >: A](implicit A: Order[AA]): Task[Option[AA]]`
   * [ ] `maxF[AA >: A](implicit A: Order[AA]): Observable[AA]`

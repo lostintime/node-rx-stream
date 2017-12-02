@@ -27,6 +27,7 @@ import OnErrorRetryIfObservable from "../operators/OnErrorRetryIfObservable";
 import CountSubscriber from "../operators/CountSubscriber";
 import DefaultIfEmptySubscriber from "../operators/DefaultIfEmptySubscriber";
 import TakeEveryNthSubscriber from "../operators/TakeEveryNthSubscriber";
+import IsEmptySubscriber from "../operators/IsEmptySubscriber";
 
 
 export default abstract class OperatorsMixin<A> {
@@ -203,6 +204,14 @@ export default abstract class OperatorsMixin<A> {
     return this.lastOrElseL(() => {
       throw new Error('last on empty observable');
     })
+  }
+
+  isEmptyL(): IO<boolean> {
+    return this.isEmptyF().headL();
+  }
+
+  isEmptyF(): ObservableInstance<boolean> {
+    return this.liftByOperator((out: Subscriber<boolean>) => new IsEmptySubscriber(out));
   }
 
   countL(): IO<number> {
