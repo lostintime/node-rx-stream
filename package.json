@@ -31,6 +31,6 @@
     "tslint": "^5.8.0",
     "tslint-config-standard": "^7.0.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.6.1"
+    "typescript": "^2.7.2"
   }
 }

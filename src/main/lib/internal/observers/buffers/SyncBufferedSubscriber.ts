@@ -26,7 +26,7 @@ function assert(expr: boolean, message: string): void {
 }
 
 export default class SyncBufferedSubscriber<A> implements Subscriber.Sync<A> {
-  private _errorThrown: Throwable
+  private _errorThrown!: Throwable
   private _upstreamIsComplete: boolean = false
   private _downstreamIsComplete: boolean = false
   private _isLoopActive: boolean = false

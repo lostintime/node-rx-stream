@@ -19,7 +19,7 @@ import { Scheduler, Try, Throwable, Success, Failure } from "funfix"
 
 export default class LastOrElseSubscriber<A> implements Subscriber<A> {
   private _isEmpty = true
-  private value: A
+  private value!: A
 
   constructor(private readonly _cb: (a: Try<A>) => void,
               private readonly _default: () => A,

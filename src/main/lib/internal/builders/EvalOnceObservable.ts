@@ -19,7 +19,7 @@ import { Subscriber } from "../../Reactive"
 import { Cancelable, Throwable } from "funfix"
 
 export default class EvalOnceObservable<A> extends ObservableInstance<A> {
-  private _result: A
+  private _result!: A
   private _errorThrown: Throwable | null = null
   private _hasResult: boolean = false
 
