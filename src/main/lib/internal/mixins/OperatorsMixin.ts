@@ -191,7 +191,7 @@ export default abstract class OperatorsMixin<A> {
   }
 
   firstOptionL(): IO<Option<A>> {
-    return this.map((e) => Some(e)).firstOrElseL(() => None)
+    return this.map((e): Option<A> => Some(e)).firstOrElseL(() => None)
   }
 
   findL(p: (a: A) => boolean): IO<Option<A>> {
@@ -217,7 +217,7 @@ export default abstract class OperatorsMixin<A> {
   }
 
   lastOptionL(): IO<Option<A>> {
-    return this.map((e) => Some(e)).lastOrElseL(() => None)
+    return this.map((e): Option<A> => Some(e)).lastOrElseL(() => None)
   }
 
   lastL(): IO<A> {
